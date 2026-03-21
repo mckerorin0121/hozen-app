@@ -234,6 +234,11 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 px-6 bg-hozen-dark text-white/40 text-sm text-center">
         <p>&copy; 2026 歩禅 HoZen. All rights reserved.</p>
+        <div className="mt-3 flex justify-center gap-6">
+          <Link href="/tokusho" className="hover:text-white/60 transition-colors">
+            特定商取引法に基づく表記
+          </Link>
+        </div>
       </footer>
     </main>
   )
