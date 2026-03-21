@@ -6,102 +6,160 @@ import { FREE_PROGRAMS, PREMIUM_PROGRAMS, MeditationProgram, GuideStep } from '@
 import { StepDetector } from '@/lib/step-detector'
 import { VoiceGuide } from '@/lib/tts'
 
-type Screen = 'select' | 'playing' | 'complete'
+type Screen = 'onboarding' | 'select' | 'prepare' | 'playing' | 'complete'
+type AmbientType = 'forest' | 'stream' | 'rain' | 'wind' | 'none'
 
+/* ─── Icons ─── */
 function BackIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M19 12H5M12 19l-7-7 7-7" />
-    </svg>
-  )
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
 }
-
-function PlayIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  )
+function PlayIcon({ size = 32 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
 }
-
 function PauseIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-    </svg>
-  )
+  return <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
 }
-
 function LockIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  )
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
 }
 
-function VolumeIcon({ muted }: { muted: boolean }) {
-  return muted ? (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M11 5L6 9H2v6h4l5 4V5z" />
-      <line x1="23" y1="9" x2="17" y2="15" />
-      <line x1="17" y1="9" x2="23" y2="15" />
-    </svg>
-  ) : (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M11 5L6 9H2v6h4l5 4V5z" />
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-    </svg>
-  )
-}
+/* ─── Ambient Sound ─── */
+const AMBIENTS: { id: AmbientType; label: string; emoji: string }[] = [
+  { id: 'forest', label: '森', emoji: '🌿' },
+  { id: 'stream', label: '小川', emoji: '💧' },
+  { id: 'rain', label: '雨', emoji: '🌧️' },
+  { id: 'wind', label: '風', emoji: '🌬️' },
+  { id: 'none', label: 'なし', emoji: '🔇' },
+]
 
+/* ─── Onboarding ─── */
+const ONBOARDING_SLIDES = [
+  {
+    emoji: '🚶‍♂️',
+    title: '歩く瞑想って？',
+    body: '歩行瞑想（ウォーキングメディテーション）は、2500年以上の歴史を持つ瞑想法です。\n\n座る瞑想と違い、日常の「歩く」動作そのものを瞑想の対象にします。仏教の僧侶たちは食後の歩行瞑想を日課としており、現代の研究でもストレス軽減・集中力向上の効果が実証されています。',
+  },
+  {
+    emoji: '🧠',
+    title: 'なぜ効くの？',
+    body: '歩くとき、私たちの脳は無意識にたくさんのことを処理しています。足裏の感覚、バランス、周囲の音...\n\nこれらに「意識的に」注意を向けることで、過去の後悔や未来の不安から離れ、「今ここ」に意識が集中します。\n\nたった5分間の歩行瞑想で、脳のストレスホルモン（コルチゾール）が平均23%低下するという研究結果もあります。',
+  },
+  {
+    emoji: '✨',
+    title: '歩禅の使い方',
+    body: '① イヤホンをつける\n音声ガイドと自然の環境音が流れます。\n\n② いつもの道を歩くだけ\n通勤中でも散歩でもOK。特別な場所は不要です。\n\n③ 音声に身を任せる\n呼吸のタイミング、足の運び方を優しくガイドします。\n\n④ 5分間だけ\n最初は5分間から。慣れたら10分、15分と伸ばしていきましょう。',
+  },
+]
+
+/* ═════════════════════ Main Component ═════════════════════ */
 export default function MeditationPage() {
-  const [screen, setScreen] = useState<Screen>('select')
+  const [screen, setScreen] = useState<Screen>('onboarding')
+  const [onboardingPage, setOnboardingPage] = useState(0)
   const [selectedProgram, setSelectedProgram] = useState<MeditationProgram | null>(null)
+  const [ambient, setAmbient] = useState<AmbientType>('forest')
   const [isPlaying, setIsPlaying] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [steps, setSteps] = useState(0)
   const [currentGuide, setCurrentGuide] = useState<GuideStep | null>(null)
   const [breathPhase, setBreathPhase] = useState<'in' | 'out' | 'hold' | null>(null)
   const [voiceMuted, setVoiceMuted] = useState(false)
+  const [countdown, setCountdown] = useState(-1)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const stepDetectorRef = useRef<StepDetector | null>(null)
   const voiceRef = useRef<VoiceGuide | null>(null)
+  const ambientRef = useRef<HTMLAudioElement | null>(null)
   const guideIndexRef = useRef(0)
 
-  // Initialize voice guide
+  // Check if onboarding already seen
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('hozen_onboarded') === '1') {
+        setScreen('select')
+      }
+    } catch {}
+  }, [])
+
   useEffect(() => {
     voiceRef.current = new VoiceGuide()
     return () => voiceRef.current?.stop()
   }, [])
 
+  const finishOnboarding = () => {
+    try { sessionStorage.setItem('hozen_onboarded', '1') } catch {}
+    setScreen('select')
+  }
+
+  /* ─── Ambient audio ─── */
+  const startAmbient = useCallback((type: AmbientType) => {
+    if (ambientRef.current) {
+      ambientRef.current.pause()
+      ambientRef.current = null
+    }
+    if (type === 'none') return
+    const audio = new Audio(`/audio/${type}.ogg`)
+    audio.loop = true
+    audio.volume = 0.35
+    // Fade in
+    audio.volume = 0
+    audio.play().catch(() => {})
+    let vol = 0
+    const fadeIn = setInterval(() => {
+      vol += 0.02
+      if (vol >= 0.35) { audio.volume = 0.35; clearInterval(fadeIn); return }
+      audio.volume = vol
+    }, 100)
+    ambientRef.current = audio
+  }, [])
+
+  const stopAmbient = useCallback(() => {
+    if (!ambientRef.current) return
+    const audio = ambientRef.current
+    let vol = audio.volume
+    const fadeOut = setInterval(() => {
+      vol -= 0.02
+      if (vol <= 0) { audio.pause(); clearInterval(fadeOut); ambientRef.current = null; return }
+      audio.volume = vol
+    }, 80)
+  }, [])
+
+  /* ─── Meditation lifecycle ─── */
   const startMeditation = useCallback(async (program: MeditationProgram) => {
     if (program.isPremium) {
       window.location.href = '/pricing'
       return
     }
-
     setSelectedProgram(program)
+    setScreen('prepare')
+
+    // 3-2-1 countdown
+    setCountdown(3)
+    for (let i = 3; i >= 1; i--) {
+      await new Promise(r => setTimeout(r, 1000))
+      setCountdown(i - 1)
+    }
+
     setScreen('playing')
     setElapsed(0)
     setSteps(0)
     setIsPlaying(true)
     guideIndexRef.current = 0
 
+    // Start ambient
+    startAmbient(ambient)
+
     // Start step detector
     const detector = new StepDetector((count) => setSteps(count))
     stepDetectorRef.current = detector
     await detector.start()
 
-    // Speak first guide
+    // First guide
     if (program.steps.length > 0) {
       setCurrentGuide(program.steps[0])
       setBreathPhase(program.steps[0].breathe || null)
       voiceRef.current?.speak(program.steps[0].speech)
     }
-  }, [])
+  }, [ambient, startAmbient])
 
   // Timer
   useEffect(() => {
@@ -110,38 +168,34 @@ export default function MeditationPage() {
         setElapsed(prev => {
           const next = prev + 1
           const totalSeconds = selectedProgram.duration * 60
-
-          // Check for guide steps
           const steps = selectedProgram.steps
           const nextIndex = guideIndexRef.current + 1
           if (nextIndex < steps.length && next >= steps[nextIndex].time) {
             guideIndexRef.current = nextIndex
             setCurrentGuide(steps[nextIndex])
             setBreathPhase(steps[nextIndex].breathe || null)
-            if (!voiceMuted) {
-              voiceRef.current?.speak(steps[nextIndex].speech)
-            }
+            if (!voiceMuted) voiceRef.current?.speak(steps[nextIndex].speech)
           }
-
-          // Complete
           if (next >= totalSeconds) {
             setIsPlaying(false)
             setScreen('complete')
             stepDetectorRef.current?.stop()
+            stopAmbient()
             if (timerRef.current) clearInterval(timerRef.current)
           }
-
           return next
         })
       }, 1000)
     }
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [isPlaying, selectedProgram, voiceMuted])
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [isPlaying, selectedProgram, voiceMuted, stopAmbient])
 
   const togglePlay = () => {
+    if (isPlaying) {
+      if (ambientRef.current) ambientRef.current.volume = 0.1
+    } else {
+      if (ambientRef.current) ambientRef.current.volume = 0.35
+    }
     setIsPlaying(prev => !prev)
   }
 
@@ -149,6 +203,7 @@ export default function MeditationPage() {
     setIsPlaying(false)
     stepDetectorRef.current?.stop()
     voiceRef.current?.stop()
+    stopAmbient()
     if (timerRef.current) clearInterval(timerRef.current)
     setScreen('complete')
   }
@@ -164,31 +219,87 @@ export default function MeditationPage() {
     return `${m}:${s.toString().padStart(2, '0')}`
   }
 
-  // Program Selection Screen
+  /* ═══════════════ ONBOARDING ═══════════════ */
+  if (screen === 'onboarding') {
+    const slide = ONBOARDING_SLIDES[onboardingPage]
+    const isLast = onboardingPage === ONBOARDING_SLIDES.length - 1
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center px-8 max-w-lg mx-auto">
+          <div className="text-7xl mb-8 float-animation">{slide.emoji}</div>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center font-jp">
+            {slide.title}
+          </h2>
+          <div className="text-white/80 text-base leading-relaxed whitespace-pre-line text-center">
+            {slide.body}
+          </div>
+        </div>
+
+        <div className="px-8 pb-12 max-w-lg mx-auto w-full">
+          {/* Page dots */}
+          <div className="flex justify-center gap-2 mb-8">
+            {ONBOARDING_SLIDES.map((_, i) => (
+              <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                i === onboardingPage ? 'bg-hozen-gold w-8' : 'bg-white/30'
+              }`} />
+            ))}
+          </div>
+
+          <button
+            onClick={() => isLast ? finishOnboarding() : setOnboardingPage(p => p + 1)}
+            className="w-full py-4 bg-hozen-gold text-hozen-dark font-bold rounded-full text-lg hover:bg-hozen-gold-light transition-all active:scale-95"
+          >
+            {isLast ? 'はじめる →' : '次へ'}
+          </button>
+          {!isLast && (
+            <button onClick={finishOnboarding} className="w-full mt-3 text-white/40 text-sm hover:text-white/60">
+              スキップ
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  /* ═══════════════ PROGRAM SELECT ═══════════════ */
   if (screen === 'select') {
     return (
       <div className="min-h-screen bg-hozen-cream">
         <div className="max-w-lg mx-auto px-6 py-8">
           <Link href="/" className="inline-flex items-center gap-2 text-hozen-green/60 hover:text-hozen-green mb-8">
-            <BackIcon />
-            <span>ホーム</span>
+            <BackIcon /><span>ホーム</span>
           </Link>
 
           <h1 className="text-3xl font-bold text-hozen-green mb-2 font-jp">歩禅プログラム</h1>
-          <p className="text-hozen-dark/60 mb-8">今日の気分に合わせて選んでください</p>
+          <p className="text-hozen-dark/60 mb-6">今日の気分に合わせて選んでください</p>
 
-          {/* Free Programs */}
+          {/* Ambient selector */}
           <div className="mb-8">
-            <h2 className="text-sm font-semibold text-hozen-green/60 uppercase tracking-wider mb-4">
-              無料プログラム
-            </h2>
+            <p className="text-sm font-medium text-hozen-dark/50 mb-3">環境音を選ぶ</p>
+            <div className="flex gap-2 flex-wrap">
+              {AMBIENTS.map(a => (
+                <button
+                  key={a.id}
+                  onClick={() => setAmbient(a.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    ambient === a.id
+                      ? 'bg-hozen-green text-white shadow-md'
+                      : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'
+                  }`}
+                >
+                  {a.emoji} {a.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Free */}
+          <div className="mb-8">
+            <h2 className="text-sm font-semibold text-hozen-green/60 uppercase tracking-wider mb-4">無料プログラム</h2>
             <div className="space-y-3">
               {FREE_PROGRAMS.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => startMeditation(p)}
-                  className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]"
-                >
+                <button key={p.id} onClick={() => startMeditation(p)}
+                  className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-bold text-hozen-green text-lg font-jp">{p.title}</h3>
@@ -206,18 +317,13 @@ export default function MeditationPage() {
             </div>
           </div>
 
-          {/* Premium Programs */}
+          {/* Premium */}
           <div>
-            <h2 className="text-sm font-semibold text-hozen-gold uppercase tracking-wider mb-4">
-              プレミアム ✨
-            </h2>
+            <h2 className="text-sm font-semibold text-hozen-gold uppercase tracking-wider mb-4">プレミアム ✨</h2>
             <div className="space-y-3">
               {PREMIUM_PROGRAMS.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => startMeditation(p)}
-                  className="w-full text-left bg-white/60 rounded-2xl p-5 border border-hozen-gold/20 hover:border-hozen-gold/40 transition-all active:scale-[0.98]"
-                >
+                <button key={p.id} onClick={() => startMeditation(p)}
+                  className="w-full text-left bg-white/60 rounded-2xl p-5 border border-hozen-gold/20 hover:border-hozen-gold/40 transition-all active:scale-[0.98]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-bold text-hozen-dark/80 text-lg font-jp">{p.title}</h3>
@@ -225,9 +331,7 @@ export default function MeditationPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-hozen-dark/40">{p.duration}分</span>
-                      <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold">
-                        <LockIcon />
-                      </div>
+                      <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><LockIcon /></div>
                     </div>
                   </div>
                 </button>
@@ -237,7 +341,7 @@ export default function MeditationPage() {
 
           <div className="mt-8 text-center">
             <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
-              プレミアムプランで全プログラム解放 →
+              プレミアムで全プログラム解放 →
             </Link>
           </div>
         </div>
@@ -245,135 +349,161 @@ export default function MeditationPage() {
     )
   }
 
-  // Playing Screen
+  /* ═══════════════ PREPARE (Countdown) ═══════════════ */
+  if (screen === 'prepare') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col items-center justify-center px-6">
+        <p className="text-white/60 text-lg mb-8 font-jp">深呼吸して、準備しましょう</p>
+        <div className="w-32 h-32 rounded-full border-2 border-hozen-gold/40 flex items-center justify-center breathing-animation">
+          <span className="text-6xl font-light text-white">
+            {countdown > 0 ? countdown : '...'}
+          </span>
+        </div>
+        <p className="text-white/40 mt-8 text-sm">イヤホンの装着を確認してください</p>
+      </div>
+    )
+  }
+
+  /* ═══════════════ PLAYING ═══════════════ */
   if (screen === 'playing' && selectedProgram) {
     const totalSeconds = selectedProgram.duration * 60
     const progress = elapsed / totalSeconds
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col items-center justify-center px-6 relative">
-        {/* Stop button */}
-        <button
-          onClick={stopMeditation}
-          className="absolute top-8 right-6 text-white/40 hover:text-white/80 text-sm"
-        >
+      <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col items-center justify-center px-6 relative overflow-hidden">
+        {/* Animated background particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div key={i}
+              className="absolute rounded-full bg-white/5 breathing-animation"
+              style={{
+                width: `${80 + i * 40}px`,
+                height: `${80 + i * 40}px`,
+                top: `${10 + i * 15}%`,
+                left: `${5 + i * 16}%`,
+                animationDelay: `${i * 1.3}s`,
+                animationDuration: `${6 + i * 2}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Stop */}
+        <button onClick={stopMeditation} className="absolute top-8 right-6 text-white/30 hover:text-white/60 text-sm z-10">
           終了する
         </button>
 
-        {/* Breathing circle */}
-        <div className="relative mb-12">
-          <div
-            className={`w-48 h-48 rounded-full border-2 flex items-center justify-center transition-all duration-[4000ms] ease-in-out ${
-              breathPhase === 'in'
-                ? 'scale-125 border-hozen-gold/60 bg-hozen-gold/10'
-                : breathPhase === 'out'
-                ? 'scale-90 border-white/30 bg-white/5'
-                : 'scale-100 border-white/20 bg-white/5'
-            }`}
-          >
+        {/* Ambient label */}
+        <div className="absolute top-8 left-6 text-white/20 text-sm z-10">
+          {AMBIENTS.find(a => a.id === ambient)?.emoji} {AMBIENTS.find(a => a.id === ambient)?.label}
+        </div>
+
+        {/* Breathing circle + timer */}
+        <div className="relative mb-10 z-10">
+          <div className={`w-52 h-52 rounded-full border-2 flex items-center justify-center transition-all duration-[4000ms] ease-in-out ${
+            breathPhase === 'in'
+              ? 'scale-125 border-hozen-gold/60 bg-hozen-gold/5'
+              : breathPhase === 'out'
+              ? 'scale-90 border-white/20 bg-white/3'
+              : 'scale-100 border-white/15 bg-white/3'
+          }`}>
             <div className="text-center">
-              <div className="text-5xl font-light text-white mb-1">{formatTime(elapsed)}</div>
-              <div className="text-white/40 text-sm">/ {formatTime(totalSeconds)}</div>
+              <div className="text-5xl font-light text-white tabular-nums">{formatTime(elapsed)}</div>
+              <div className="text-white/30 text-sm mt-1">/ {formatTime(totalSeconds)}</div>
             </div>
           </div>
-
           {/* Progress ring */}
-          <svg className="absolute inset-0 w-48 h-48 -rotate-90">
-            <circle
-              cx="96" cy="96" r="90"
-              fill="none"
-              stroke="rgba(197, 165, 90, 0.3)"
-              strokeWidth="4"
-            />
-            <circle
-              cx="96" cy="96" r="90"
-              fill="none"
-              stroke="#C5A55A"
-              strokeWidth="4"
-              strokeDasharray={`${2 * Math.PI * 90}`}
-              strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress)}`}
-              strokeLinecap="round"
-              className="transition-all duration-1000"
-            />
+          <svg className="absolute inset-0 w-52 h-52 -rotate-90" viewBox="0 0 208 208">
+            <circle cx="104" cy="104" r="98" fill="none" stroke="rgba(197,165,90,0.15)" strokeWidth="4" />
+            <circle cx="104" cy="104" r="98" fill="none" stroke="#C5A55A" strokeWidth="4"
+              strokeDasharray={`${2 * Math.PI * 98}`}
+              strokeDashoffset={`${2 * Math.PI * 98 * (1 - progress)}`}
+              strokeLinecap="round" className="transition-all duration-1000" />
           </svg>
         </div>
 
-        {/* Guide text */}
-        <div className="text-center mb-12 min-h-[80px]">
+        {/* Guide text card */}
+        <div className="text-center mb-10 min-h-[100px] z-10 max-w-sm">
           {currentGuide && (
-            <p className="text-white text-xl leading-relaxed font-light whitespace-pre-line transition-opacity duration-500">
-              {currentGuide.text}
-            </p>
-          )}
-          {breathPhase && (
-            <p className="text-hozen-gold/80 text-sm mt-3">
-              {breathPhase === 'in' ? '吸って...' : breathPhase === 'out' ? '吐いて...' : '止めて...'}
-            </p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-5 border border-white/10">
+              <p className="text-white text-lg leading-relaxed font-light whitespace-pre-line">
+                {currentGuide.text}
+              </p>
+              {breathPhase && (
+                <p className="text-hozen-gold text-sm mt-3 font-medium">
+                  {breathPhase === 'in' ? '🫁 吸って...' : breathPhase === 'out' ? '🫁 吐いて...' : '⏸️ 止めて...'}
+                </p>
+              )}
+            </div>
           )}
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-8">
-          <button onClick={toggleVoice} className="text-white/50 hover:text-white/80 transition-colors p-2">
-            <VolumeIcon muted={voiceMuted} />
+        <div className="flex items-center gap-8 z-10">
+          <button onClick={toggleVoice} className={`p-3 rounded-full transition-all ${voiceMuted ? 'bg-white/5 text-white/30' : 'bg-white/10 text-white/70'}`}>
+            {voiceMuted ? '🔇' : '🔊'}
           </button>
-
-          <button
-            onClick={togglePlay}
-            className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-white/20 transition-all active:scale-95"
-          >
+          <button onClick={togglePlay}
+            className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-white/20 transition-all active:scale-95">
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
-
-          <div className="text-white/50 text-sm min-w-[60px] text-center">
-            🚶 {steps} 歩
+          <div className="p-3 rounded-full bg-white/10 text-white/70 text-sm min-w-[60px] text-center">
+            🚶 {steps}
           </div>
+        </div>
+
+        {/* Step indicator */}
+        <div className="absolute bottom-8 flex gap-1.5">
+          {[0,1,2].map(i => (
+            <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+              (steps % 4) > i ? 'bg-hozen-gold' : 'bg-white/20'}`} />
+          ))}
         </div>
       </div>
     )
   }
 
-  // Complete Screen
+  /* ═══════════════ COMPLETE ═══════════════ */
   if (screen === 'complete') {
-    const totalMinutes = selectedProgram ? selectedProgram.duration : Math.floor(elapsed / 60)
     return (
       <div className="min-h-screen bg-gradient-to-b from-hozen-green to-hozen-dark flex flex-col items-center justify-center px-6 text-center">
-        <div className="text-6xl mb-8">🙏</div>
-        <h1 className="text-3xl font-bold text-white mb-4 font-jp">お疲れさまでした</h1>
-        <p className="text-white/60 text-lg mb-12">素晴らしい歩禅でした</p>
+        <div className="text-7xl mb-6 float-animation">🙏</div>
+        <h1 className="text-3xl font-bold text-white mb-3 font-jp">お疲れさまでした</h1>
+        <p className="text-white/50 text-lg mb-10">今日も一歩、心が整いました</p>
 
-        <div className="grid grid-cols-3 gap-8 mb-12">
-          <div>
-            <div className="text-3xl font-bold text-hozen-gold">{formatTime(elapsed)}</div>
-            <div className="text-white/40 text-sm mt-1">瞑想時間</div>
+        <div className="grid grid-cols-3 gap-6 mb-12 w-full max-w-xs">
+          <div className="bg-white/5 rounded-2xl p-4">
+            <div className="text-2xl font-bold text-hozen-gold">{formatTime(elapsed)}</div>
+            <div className="text-white/40 text-xs mt-1">瞑想時間</div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-hozen-gold">{steps}</div>
-            <div className="text-white/40 text-sm mt-1">歩数</div>
+          <div className="bg-white/5 rounded-2xl p-4">
+            <div className="text-2xl font-bold text-hozen-gold">{steps}</div>
+            <div className="text-white/40 text-xs mt-1">歩数</div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-hozen-gold">1</div>
-            <div className="text-white/40 text-sm mt-1">連続日数</div>
+          <div className="bg-white/5 rounded-2xl p-4">
+            <div className="text-2xl font-bold text-hozen-gold">1</div>
+            <div className="text-white/40 text-xs mt-1">連続日数</div>
           </div>
         </div>
 
-        <div className="space-y-4 w-full max-w-xs">
-          <button
-            onClick={() => { setScreen('select'); setElapsed(0); setSteps(0) }}
-            className="w-full px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all"
-          >
+        {/* Today's insight */}
+        <div className="bg-white/5 rounded-2xl p-6 max-w-sm mb-10 border border-white/10">
+          <p className="text-white/70 text-sm leading-relaxed italic">
+            「歩く瞑想の要は、足の裏の感覚に気づくこと。それだけで、心は自然と静まります。」
+          </p>
+          <p className="text-white/30 text-xs mt-3">— ティク・ナット・ハン</p>
+        </div>
+
+        <div className="space-y-3 w-full max-w-xs">
+          <button onClick={() => { setScreen('select'); setElapsed(0); setSteps(0) }}
+            className="w-full px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all active:scale-95">
             もう一度
           </button>
-          <Link
-            href="/pricing"
-            className="w-full inline-block px-8 py-4 bg-white/10 text-white font-medium rounded-full text-lg border border-white/20 hover:bg-white/20 transition-all text-center"
-          >
+          <Link href="/pricing"
+            className="w-full inline-block px-8 py-4 bg-white/10 text-white font-medium rounded-full text-lg border border-white/20 hover:bg-white/20 transition-all text-center">
             プレミアムで更に深く →
           </Link>
-          <Link
-            href="/"
-            className="block text-white/40 hover:text-white/60 mt-4"
-          >
+          <Link href="/" className="block text-white/30 hover:text-white/50 mt-4 text-sm">
             ホームに戻る
           </Link>
         </div>
