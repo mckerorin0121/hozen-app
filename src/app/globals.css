@@ -54,3 +54,23 @@ body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+
+/* Accessibility: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .breathing-animation,
+  .float-animation,
+  .pulse-ring {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Accessibility: focus visible */
+:focus-visible {
+  outline: 2px solid var(--hozen-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
