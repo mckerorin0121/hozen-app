@@ -174,6 +174,10 @@ export default function MeditationPage() {
       window.location.href = '/pricing'
       return
     }
+
+    // Unlock audio on user gesture (critical for iOS/Android)
+    await voiceRef.current?.unlock()
+
     setSelectedProgram(program)
     setScreen('prepare')
     sessionSavedRef.current = false

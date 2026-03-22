@@ -12,15 +12,21 @@ export type VoiceGender = 'female' | 'male'
  * 声の選択:
  * - female: Shiori (Azure TTS ja-JP-ShioriNeural) — 落ち着いた女性声
  * - male:   Daichi (Azure TTS ja-JP-DaichiNeural) — 落ち着いた男性声
+ *
+ * モバイル対応:
+ * - iOS/Android の autoplay ポリシーに対応
+ * - ユーザージェスチャー時に AudioContext を unlock
+ * - 単一の Audio 要素を使い回して再生（iOS Safari 制約対応）
  */
 export class VoiceGuide {
   private synth: SpeechSynthesis | null = null
   private voice: SpeechSynthesisVoice | null = null
   private enabled = true
-  private currentAudio: HTMLAudioElement | null = null
-  private audioCache: Map<string, HTMLAudioElement> = new Map()
+  private sharedAudio: HTMLAudioElement | null = null
   private usePrerecorded = false
   private gender: VoiceGender = 'female'
+  private audioUnlocked = false
+  private audioContext: AudioContext | null = null
 
   constructor(gender: VoiceGender = 'female') {
     this.gender = gender
@@ -28,13 +34,50 @@ export class VoiceGuide {
       this.synth = window.speechSynthesis
       this.loadVoice()
       this.checkPrerecordedAudio()
+
+      // Create a single shared Audio element (iOS requires reusing the same element)
+      this.sharedAudio = new Audio()
+      this.sharedAudio.volume = 0.9
+    }
+  }
+
+  /**
+   * Must be called from a user gesture (tap/click) to unlock audio on iOS/Android.
+   * Call this when the user taps "start meditation".
+   */
+  async unlock(): Promise<void> {
+    if (this.audioUnlocked) return
+
+    try {
+      // Unlock AudioContext
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+      if (AudioCtx) {
+        this.audioContext = new AudioCtx()
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume()
+        }
+      }
+
+      // Unlock the shared Audio element by playing silence
+      if (this.sharedAudio) {
+        // Create a tiny silent audio data URI
+        this.sharedAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwMHAAAAAAD/+1DEAAAB8ANoAAAAIAAANIAAAAQAAAAA//tQxBcAAADSAAAAAAAAANIAAAAQAAAAAA=='
+        await this.sharedAudio.play()
+        this.sharedAudio.pause()
+        this.sharedAudio.currentTime = 0
+      }
+
+      this.audioUnlocked = true
+      console.log('🔓 Audio unlocked for mobile playback')
+    } catch (e) {
+      // Unlock may fail silently — fallback to Web Speech API
+      console.warn('Audio unlock failed:', e)
     }
   }
 
   setGender(gender: VoiceGender) {
     if (this.gender !== gender) {
       this.gender = gender
-      this.audioCache.clear() // Clear cache when voice changes
       this.checkPrerecordedAudio()
     }
   }
@@ -60,7 +103,6 @@ export class VoiceGuide {
 
     const setVoice = () => {
       const voices = this.synth!.getVoices()
-      // Prefer O-Ren (Neural) > Kyoko (Enhanced) > any Japanese voice
       this.voice =
         voices.find(v => v.name.includes('O-Ren')) ||
         voices.find(v => v.name.includes('Kyoko') && v.name.includes('Enhanced')) ||
@@ -91,14 +133,14 @@ export class VoiceGuide {
       return
     }
 
-    // Fallback: Web Speech API with improved settings
+    // Fallback: Web Speech API
     if (!this.synth) return
     this.synth.cancel()
 
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'ja-JP'
-    utterance.rate = 0.8   // Slower for meditation
-    utterance.pitch = 0.85 // Lower for calm tone
+    utterance.rate = 0.8
+    utterance.pitch = 0.85
     utterance.volume = 0.85
 
     if (this.voice) {
@@ -111,16 +153,15 @@ export class VoiceGuide {
   private playFile(fileKey: string) {
     const path = `/audio/guide/${this.gender}/${fileKey}.mp3`
 
-    let audio = this.audioCache.get(fileKey)
-    if (!audio) {
-      audio = new Audio(path)
-      audio.volume = 0.9
-      this.audioCache.set(fileKey, audio)
-    }
+    if (!this.sharedAudio) return
 
-    audio.currentTime = 0
-    audio.play().catch(() => {})
-    this.currentAudio = audio
+    // Reuse the single shared Audio element (critical for iOS Safari)
+    this.sharedAudio.src = path
+    this.sharedAudio.currentTime = 0
+    this.sharedAudio.play().catch(() => {
+      // If play fails, try Web Speech API as fallback
+      console.warn(`Audio play failed for ${fileKey}, falling back to TTS`)
+    })
   }
 
   toggle() {
@@ -134,10 +175,9 @@ export class VoiceGuide {
   }
 
   stop() {
-    if (this.currentAudio) {
-      this.currentAudio.pause()
-      this.currentAudio.currentTime = 0
-      this.currentAudio = null
+    if (this.sharedAudio) {
+      this.sharedAudio.pause()
+      this.sharedAudio.currentTime = 0
     }
     this.synth?.cancel()
   }
