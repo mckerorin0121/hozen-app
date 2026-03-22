@@ -1,7 +1,8 @@
 export interface GuideStep {
   time: number      // seconds from start
   text: string      // displayed text
-  speech: string    // for TTS
+  speech: string    // for TTS fallback
+  fileKey?: string  // pre-recorded audio file key (e.g. "day1_01")
   breathe?: 'in' | 'out' | 'hold'
 }
 
@@ -22,24 +23,24 @@ export const FREE_PROGRAMS: MeditationProgram[] = [
     duration: 5,
     isPremium: false,
     steps: [
-      { time: 0, text: '目を軽く閉じて、3回深呼吸しましょう', speech: '目を軽く閉じて、3回深呼吸しましょう', breathe: 'in' },
-      { time: 8, text: 'ゆっくり吐いて...', speech: 'ゆっくり吐いて', breathe: 'out' },
-      { time: 15, text: 'もう一度、吸って...', speech: 'もう一度、吸って', breathe: 'in' },
-      { time: 22, text: '吐いて...', speech: '吐いて', breathe: 'out' },
-      { time: 30, text: 'では、ゆっくり歩き始めてください', speech: 'では、ゆっくり歩き始めてください' },
-      { time: 40, text: '右足が地面に触れる感覚に\n意識を向けましょう', speech: '右足が地面に触れる感覚に意識を向けましょう' },
-      { time: 55, text: '次は左足。\n足の裏全体で地面を感じてください', speech: '次は左足。足の裏全体で地面を感じてください' },
-      { time: 75, text: 'そのまま歩き続けてください\n一歩一歩に集中して', speech: 'そのまま歩き続けてください。一歩一歩に集中して' },
-      { time: 100, text: '周りの音に耳を傾けてみましょう\n風の音、鳥の声...', speech: '周りの音に耳を傾けてみましょう。風の音、鳥の声' },
-      { time: 130, text: '呼吸のリズムに合わせて\n歩いてみましょう', speech: '呼吸のリズムに合わせて歩いてみましょう', breathe: 'in' },
-      { time: 150, text: '吸って、2歩\n吐いて、3歩', speech: '吸って、2歩。吐いて、3歩', breathe: 'out' },
-      { time: 180, text: '素晴らしいです\nそのまま歩き続けてください', speech: '素晴らしいです。そのまま歩き続けてください' },
-      { time: 210, text: '頭に浮かぶ考えは\n雲のように流しましょう', speech: '頭に浮かぶ考えは、雲のように流しましょう' },
-      { time: 240, text: 'あと1分です\n最後の一歩一歩を味わって', speech: 'あと1分です。最後の一歩一歩を味わって' },
-      { time: 270, text: 'ゆっくりと歩みを止めてください', speech: 'ゆっくりと歩みを止めてください' },
-      { time: 280, text: '深く息を吸って...', speech: '深く息を吸って', breathe: 'in' },
-      { time: 287, text: 'ゆっくり吐いて...', speech: 'ゆっくり吐いて', breathe: 'out' },
-      { time: 295, text: 'お疲れさまでした\n素晴らしい歩禅でした', speech: 'お疲れさまでした。素晴らしい歩禅でした' },
+      { time: 0, text: '目を軽く閉じて、3回深呼吸しましょう', speech: '目を軽く閉じて、3回深呼吸しましょう', fileKey: 'day1_01', breathe: 'in' },
+      { time: 8, text: 'ゆっくり吐いて...', speech: 'ゆっくり吐いて', fileKey: 'day1_02', breathe: 'out' },
+      { time: 15, text: 'もう一度、吸って...', speech: 'もう一度、吸って', fileKey: 'day1_03', breathe: 'in' },
+      { time: 22, text: '吐いて...', speech: '吐いて', fileKey: 'day1_04', breathe: 'out' },
+      { time: 30, text: 'では、ゆっくり歩き始めてください', speech: 'では、ゆっくり歩き始めてください', fileKey: 'day1_05' },
+      { time: 40, text: '右足が地面に触れる感覚に\n意識を向けましょう', speech: '右足が地面に触れる感覚に意識を向けましょう', fileKey: 'day1_06' },
+      { time: 55, text: '次は左足。\n足の裏全体で地面を感じてください', speech: '次は左足。足の裏全体で地面を感じてください', fileKey: 'day1_07' },
+      { time: 75, text: 'そのまま歩き続けてください\n一歩一歩に集中して', speech: 'そのまま歩き続けてください。一歩一歩に集中して', fileKey: 'day1_08' },
+      { time: 100, text: '周りの音に耳を傾けてみましょう\n風の音、鳥の声...', speech: '周りの音に耳を傾けてみましょう。風の音、鳥の声', fileKey: 'day1_09' },
+      { time: 130, text: '呼吸のリズムに合わせて\n歩いてみましょう', speech: '呼吸のリズムに合わせて歩いてみましょう', fileKey: 'day1_10', breathe: 'in' },
+      { time: 150, text: '吸って、2歩\n吐いて、3歩', speech: '吸って、2歩。吐いて、3歩', fileKey: 'day1_11', breathe: 'out' },
+      { time: 180, text: '素晴らしいです\nそのまま歩き続けてください', speech: '素晴らしいです。そのまま歩き続けてください', fileKey: 'day1_12' },
+      { time: 210, text: '頭に浮かぶ考えは\n雲のように流しましょう', speech: '頭に浮かぶ考えは、雲のように流しましょう', fileKey: 'day1_13' },
+      { time: 240, text: 'あと1分です\n最後の一歩一歩を味わって', speech: 'あと1分です。最後の一歩一歩を味わって', fileKey: 'day1_14' },
+      { time: 270, text: 'ゆっくりと歩みを止めてください', speech: 'ゆっくりと歩みを止めてください', fileKey: 'day1_15' },
+      { time: 280, text: '深く息を吸って...', speech: '深く息を吸って', fileKey: 'day1_16', breathe: 'in' },
+      { time: 287, text: 'ゆっくり吐いて...', speech: 'ゆっくり吐いて', fileKey: 'day1_17', breathe: 'out' },
+      { time: 295, text: 'お疲れさまでした\n素晴らしい歩禅でした', speech: 'お疲れさまでした。素晴らしい歩禅でした', fileKey: 'day1_18' },
     ],
   },
   {
@@ -49,9 +50,9 @@ export const FREE_PROGRAMS: MeditationProgram[] = [
     duration: 5,
     isPremium: false,
     steps: [
-      { time: 0, text: '歩禅を始めます\nご自身のペースで歩いてください', speech: '歩禅を始めます。ご自身のペースで歩いてください' },
-      { time: 150, text: '半分が過ぎました', speech: '半分が過ぎました' },
-      { time: 290, text: 'まもなく終了です', speech: 'まもなく終了です' },
+      { time: 0, text: '歩禅を始めます\nご自身のペースで歩いてください', speech: '歩禅を始めます。ご自身のペースで歩いてください', fileKey: 'silent_start' },
+      { time: 150, text: '半分が過ぎました', speech: '半分が過ぎました', fileKey: 'silent_half' },
+      { time: 290, text: 'まもなく終了です', speech: 'まもなく終了です', fileKey: 'silent_end' },
     ],
   },
 ]

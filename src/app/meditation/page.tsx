@@ -157,7 +157,7 @@ export default function MeditationPage() {
     if (program.steps.length > 0) {
       setCurrentGuide(program.steps[0])
       setBreathPhase(program.steps[0].breathe || null)
-      voiceRef.current?.speak(program.steps[0].speech)
+      voiceRef.current?.speak(program.steps[0].speech, program.steps[0].fileKey)
     }
   }, [ambient, startAmbient])
 
@@ -174,7 +174,7 @@ export default function MeditationPage() {
             guideIndexRef.current = nextIndex
             setCurrentGuide(steps[nextIndex])
             setBreathPhase(steps[nextIndex].breathe || null)
-            if (!voiceMuted) voiceRef.current?.speak(steps[nextIndex].speech)
+            if (!voiceMuted) voiceRef.current?.speak(steps[nextIndex].speech, steps[nextIndex].fileKey)
           }
           if (next >= totalSeconds) {
             setIsPlaying(false)
