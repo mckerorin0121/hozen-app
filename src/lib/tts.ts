@@ -1,11 +1,17 @@
 'use client'
 
+export type VoiceGender = 'female' | 'male'
+
 /**
  * VoiceGuide - 音声ガイド再生
  *
  * 優先順位:
- * 1. プリレコード音声ファイル (public/audio/guide/*.mp3) — 最高品質
+ * 1. プリレコード音声ファイル (public/audio/guide/{gender}/*.mp3) — 最高品質
  * 2. Web Speech API (フォールバック) — デバイス依存
+ *
+ * 声の選択:
+ * - female: Shiori (Azure TTS ja-JP-ShioriNeural) — 落ち着いた女性声
+ * - male:   Daichi (Azure TTS ja-JP-DaichiNeural) — 落ち着いた男性声
  */
 export class VoiceGuide {
   private synth: SpeechSynthesis | null = null
@@ -14,8 +20,10 @@ export class VoiceGuide {
   private currentAudio: HTMLAudioElement | null = null
   private audioCache: Map<string, HTMLAudioElement> = new Map()
   private usePrerecorded = false
+  private gender: VoiceGender = 'female'
 
-  constructor() {
+  constructor(gender: VoiceGender = 'female') {
+    this.gender = gender
     if (typeof window !== 'undefined') {
       this.synth = window.speechSynthesis
       this.loadVoice()
@@ -23,13 +31,24 @@ export class VoiceGuide {
     }
   }
 
+  setGender(gender: VoiceGender) {
+    if (this.gender !== gender) {
+      this.gender = gender
+      this.audioCache.clear() // Clear cache when voice changes
+      this.checkPrerecordedAudio()
+    }
+  }
+
+  getGender(): VoiceGender {
+    return this.gender
+  }
+
   private async checkPrerecordedAudio() {
-    // Check if pre-recorded audio files exist
     try {
-      const res = await fetch('/audio/guide/day1_01.mp3', { method: 'HEAD' })
+      const res = await fetch(`/audio/guide/${this.gender}/day1_01.mp3`, { method: 'HEAD' })
       this.usePrerecorded = res.ok
       if (this.usePrerecorded) {
-        console.log('🎙️ 高品質プリレコード音声を使用します')
+        console.log(`🎙️ 高品質プリレコード音声を使用します (${this.gender === 'female' ? 'Shiori' : 'Daichi'})`)
       }
     } catch {
       this.usePrerecorded = false
@@ -90,7 +109,7 @@ export class VoiceGuide {
   }
 
   private playFile(fileKey: string) {
-    const path = `/audio/guide/${fileKey}.mp3`
+    const path = `/audio/guide/${this.gender}/${fileKey}.mp3`
 
     let audio = this.audioCache.get(fileKey)
     if (!audio) {

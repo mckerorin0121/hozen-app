@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { FREE_PROGRAMS, PREMIUM_PROGRAMS, MeditationProgram, GuideStep } from '@/lib/audio-guides'
 import { StepDetector } from '@/lib/step-detector'
-import { VoiceGuide } from '@/lib/tts'
+import { VoiceGuide, VoiceGender } from '@/lib/tts'
 
 type Screen = 'onboarding' | 'select' | 'prepare' | 'playing' | 'complete'
 type AmbientType = 'forest' | 'stream' | 'rain' | 'wind' | 'none'
@@ -63,6 +63,7 @@ export default function MeditationPage() {
   const [currentGuide, setCurrentGuide] = useState<GuideStep | null>(null)
   const [breathPhase, setBreathPhase] = useState<'in' | 'out' | 'hold' | null>(null)
   const [voiceMuted, setVoiceMuted] = useState(false)
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>('female')
   const [countdown, setCountdown] = useState(-1)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -213,6 +214,11 @@ export default function MeditationPage() {
     voiceRef.current?.toggle()
   }
 
+  const switchVoiceGender = (gender: VoiceGender) => {
+    setVoiceGender(gender)
+    voiceRef.current?.setGender(gender)
+  }
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
     const s = seconds % 60
@@ -290,6 +296,33 @@ export default function MeditationPage() {
                   {a.emoji} {a.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Voice gender selector */}
+          <div className="mb-8">
+            <p className="text-sm font-medium text-hozen-dark/50 mb-3">ナレーションの声</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => switchVoiceGender('female')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  voiceGender === 'female'
+                    ? 'bg-hozen-green text-white shadow-md'
+                    : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'
+                }`}
+              >
+                👩 女性（Shiori）
+              </button>
+              <button
+                onClick={() => switchVoiceGender('male')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  voiceGender === 'male'
+                    ? 'bg-hozen-green text-white shadow-md'
+                    : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'
+                }`}
+              >
+                👨 男性（Daichi）
+              </button>
             </div>
           </div>
 
