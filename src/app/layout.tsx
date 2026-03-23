@@ -7,7 +7,18 @@ export const metadata: Metadata = {
   description: '歩くだけで心が整う、新しいマインドフルネス体験。歩行瞑想アプリ「歩禅」で、毎日の歩きを瞑想の時間に。',
   manifest: '/manifest.json',
   icons: {
-    apple: '/icons/icon-192.png',
+    apple: [
+      { url: '/icons/icon-192.png', sizes: '192x192' },
+    ],
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: '歩禅',
   },
 }
 
@@ -16,6 +27,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

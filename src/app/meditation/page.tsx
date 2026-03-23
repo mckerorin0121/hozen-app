@@ -178,6 +178,14 @@ export default function MeditationPage() {
     // Unlock audio on user gesture (critical for iOS/Android)
     await voiceRef.current?.unlock()
 
+    // Pre-cache guide audio for offline playback
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'CACHE_GUIDES',
+        gender: voiceRef.current?.getGender() || 'female',
+      })
+    }
+
     setSelectedProgram(program)
     setScreen('prepare')
     sessionSavedRef.current = false
