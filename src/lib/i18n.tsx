@@ -9,10 +9,81 @@ type Translations = typeof ja
 const ja = {
   // Common
   back: '戻る',
+  home: 'ホーム',
+  back_home: '← ホームに戻る',
   start: 'スタート',
   close: '閉じる',
 
-  // Onboarding
+  // ─── Home page ───
+  hero_tagline: '歩くだけで、心が整う。',
+  hero_sub: '毎日の歩きを、瞑想の時間に。',
+  hero_cta: '無料で体験する',
+  hero_pricing: 'プランを見る',
+
+  features_title: '歩禅の特長',
+  features_sub: 'テクノロジーとマインドフルネスの融合で、\nあなたの歩きが変わります。',
+  feature1_title: '歩行連動ガイド',
+  feature1_desc: 'あなたの歩くペースに合わせて音声ガイドが自動調整。自然な歩きのまま瞑想に入れます。',
+  feature2_title: 'プロの音声誘導',
+  feature2_desc: '禅僧監修のガイド音声。初心者でも5分で深い瞑想状態へ導きます。',
+  feature3_title: '成長の可視化',
+  feature3_desc: '瞑想時間・歩数・継続日数を記録。マインドフルネスの習慣化をサポート。',
+
+  howto_title: '使い方はシンプル',
+  howto1_title: 'アプリを開く',
+  howto1_desc: 'ホーム画面からワンタップで起動。ブラウザでもスマホアプリのようにサクサク動きます。',
+  howto2_title: '歩き始める',
+  howto2_desc: 'イヤホンをつけて、いつものルートを歩くだけ。通勤中でも散歩でもOK。',
+  howto3_title: '音声に従う',
+  howto3_desc: '優しい音声が呼吸と歩行のリズムを導きます。歩くペースに自動で合わせます。',
+  howto4_title: '心が整う',
+  howto4_desc: '5分間の歩行瞑想で、集中力アップ・ストレス軽減を実感。毎日の習慣に。',
+
+  testimonial_title: '体験者の声',
+  testimonial1_quote: '通勤の15分が、一日で一番好きな時間になりました。',
+  testimonial1_name: 'Yuki S.',
+  testimonial1_role: '会社員 / 28歳',
+  testimonial2_quote: '座る瞑想は続かなかったけど、歩禅は自然に続いています。',
+  testimonial2_name: 'Takeshi M.',
+  testimonial2_role: 'マネージャー / 45歳',
+
+  cta_title: '今日から、歩禅を始めよう',
+  cta_desc: '7日間の無料体験で、歩行瞑想の効果を実感してください。\nクレジットカード不要で、今すぐ始められます。',
+  cta_button: '無料で体験する →',
+
+  footer_legal: '特定商取引法に基づく表記',
+
+  // ─── Pricing page ───
+  pricing_title: 'プレミアムプラン',
+  pricing_trial: '7日間の無料トライアル付き',
+  pricing_monthly: '月額',
+  pricing_yearly: '年額',
+  pricing_per_month: '/ 月',
+  pricing_per_year_detail: '/ 年（月あたり ¥332）',
+  pricing_save: '31% おトク',
+  pricing_feat1: '全10+の瞑想プログラム',
+  pricing_feat2: 'ストレス解放・集中力ブースト',
+  pricing_feat3: '朝・夕の専用プログラム',
+  pricing_feat4: '詳細な統計・成長レポート',
+  pricing_feat5: 'オフライン対応',
+  pricing_feat6: '新プログラム毎月追加',
+  pricing_cta: '7日間無料で試す',
+  pricing_loading: '処理中...',
+  pricing_note: '7日間の無料トライアル後、自動的に課金されます。\nいつでもキャンセル可能です。',
+  pricing_free_title: '無料プラン（現在のプラン）',
+  pricing_free1: '基本の歩行瞑想ガイド（2つ）',
+  pricing_free2: '歩数カウント',
+  pricing_free3: '基本タイマー',
+  pricing_free_continue: '無料プランで続ける',
+  pricing_error: '決済ページの準備ができていません。もうしばらくお待ちください。',
+  pricing_generic_error: 'エラーが発生しました。もう一度お試しください。',
+
+  // ─── Tokusho page ───
+  tokusho_title: '特定商取引法に基づく表記',
+  tokusho_sub: '特定商取引法第11条に基づき、以下の通り表示いたします。',
+  tokusho_contact: 'ご不明な点はメール（aimiya121@gmail.com）よりお問い合わせください。',
+
+  // ─── Onboarding ───
   onboarding_title_1: '歩く瞑想って？',
   onboarding_body_1: '歩行瞑想（ウォーキングメディテーション）は、2500年以上の歴史を持つ瞑想法です。\n\n座る瞑想と違い、日常の「歩く」動作そのものを瞑想の対象にします。仏教の僧侶たちは食後の歩行瞑想を日課としており、現代の研究でもストレス軽減・集中力向上の効果が実証されています。',
   onboarding_title_2: 'なぜ効くの？',
@@ -23,7 +94,7 @@ const ja = {
   onboarding_next: '次へ',
   onboarding_start: 'さっそく始める',
 
-  // Select screen
+  // ─── Select screen ───
   select_title: 'プログラムを選択',
   select_free: '無料',
   select_premium: 'プレミアム',
@@ -39,8 +110,9 @@ const ja = {
   select_stats_total_time: '合計',
   select_stats_streak: '連続',
   select_stats_streak_days: '日',
+  select_unlock_premium: 'プレミアムで全プログラム解放 →',
 
-  // Programs
+  // ─── Programs ───
   program_beginner_title: 'はじめての歩禅',
   program_beginner_subtitle: 'Day 1 - 5分間の基本体験',
   program_timer_title: 'サイレント歩禅',
@@ -54,27 +126,37 @@ const ja = {
   program_focus_title: '集中力ブースト',
   program_focus_subtitle: '5分間のフォーカス瞑想',
 
-  // Playing screen
+  // ─── Playing screen ───
   playing_steps: '歩',
   playing_pause: '一時停止',
   playing_resume: '再開',
-  playing_end: '終了',
+  playing_end: '終了する',
+  playing_breathe_in: '🫁 吸って...',
+  playing_breathe_out: '🫁 吐いて...',
+  playing_breathe_hold: '⏸️ 止めて...',
+  playing_prepare: '深呼吸して、準備しましょう',
+  playing_earphone: 'イヤホンの装着を確認してください',
 
-  // Complete screen
+  // ─── Complete screen ───
   complete_title: 'お疲れさまでした',
+  complete_subtitle: '今日も一歩、心が整いました',
   complete_time: '瞑想時間',
   complete_steps: '歩数',
   complete_message: '今日も素晴らしい歩禅でした。\nこの穏やかな気持ちを大切に。',
   complete_done: '完了',
+  complete_again: 'もう一度',
+  complete_premium_cta: 'プレミアムで更に深く →',
+  complete_cumulative: '累計記録',
+  complete_quote_ja: '「歩く瞑想の要は、足の裏の感覚に気づくこと。それだけで、心は自然と静まります。」',
 
-  // Ambient
+  // ─── Ambient ───
   ambient_forest: '森',
   ambient_stream: '小川',
   ambient_rain: '雨',
   ambient_wind: '風',
   ambient_none: 'なし',
 
-  // Install banner
+  // ─── Install banner ───
   install_title: '歩禅をホーム画面に追加',
   install_desc: 'アプリのようにすぐ起動できます',
   install_add: '追加',
@@ -83,9 +165,81 @@ const ja = {
 
 const en: Translations = {
   back: 'Back',
+  home: 'Home',
+  back_home: '← Back to Home',
   start: 'Start',
   close: 'Close',
 
+  // ─── Home page ───
+  hero_tagline: 'Walk your way to inner peace.',
+  hero_sub: 'Turn your daily walk into meditation.',
+  hero_cta: 'Try for Free',
+  hero_pricing: 'View Plans',
+
+  features_title: 'Why HoZen',
+  features_sub: 'Where technology meets mindfulness —\ntransform every step.',
+  feature1_title: 'Step-Synced Guidance',
+  feature1_desc: 'Voice guidance adapts to your walking pace in real time, so you slip into meditation naturally.',
+  feature2_title: 'Expert Narration',
+  feature2_desc: 'Guided sessions crafted with Zen principles. Even beginners reach deep calm in just 5 minutes.',
+  feature3_title: 'Track Your Growth',
+  feature3_desc: 'Meditation time, steps, and streaks — all recorded to help you build a lasting mindfulness habit.',
+
+  howto_title: 'How It Works',
+  howto1_title: 'Open the App',
+  howto1_desc: 'One tap from your home screen. Works beautifully in the browser — no download needed.',
+  howto2_title: 'Start Walking',
+  howto2_desc: 'Put in your earphones and walk your usual route. Commute, lunch break, or evening stroll — any time works.',
+  howto3_title: 'Follow the Voice',
+  howto3_desc: 'A gentle voice guides your breathing and pace. It adapts to how you walk.',
+  howto4_title: 'Find Your Calm',
+  howto4_desc: 'Just 5 minutes of walking meditation reduces stress and sharpens focus. Make it a daily habit.',
+
+  testimonial_title: 'What Users Say',
+  testimonial1_quote: 'My 15-minute commute became my favorite part of the day.',
+  testimonial1_name: 'Yuki S.',
+  testimonial1_role: 'Office worker / 28',
+  testimonial2_quote: "Seated meditation never stuck, but HoZen just feels natural.",
+  testimonial2_name: 'Takeshi M.',
+  testimonial2_role: 'Manager / 45',
+
+  cta_title: 'Start Your HoZen Journey Today',
+  cta_desc: 'Experience the power of walking meditation with a 7-day free trial.\nNo credit card required.',
+  cta_button: 'Try for Free →',
+
+  footer_legal: 'Legal Notice (Tokusho)',
+
+  // ─── Pricing page ───
+  pricing_title: 'Premium Plan',
+  pricing_trial: 'Includes 7-day free trial',
+  pricing_monthly: 'Monthly',
+  pricing_yearly: 'Yearly',
+  pricing_per_month: '/ month',
+  pricing_per_year_detail: '/ year (¥332/month)',
+  pricing_save: 'Save 31%',
+  pricing_feat1: '10+ meditation programs',
+  pricing_feat2: 'Stress relief & focus boost',
+  pricing_feat3: 'Morning & evening programs',
+  pricing_feat4: 'Detailed stats & growth reports',
+  pricing_feat5: 'Offline support',
+  pricing_feat6: 'New programs added monthly',
+  pricing_cta: 'Start 7-Day Free Trial',
+  pricing_loading: 'Processing...',
+  pricing_note: 'After the 7-day free trial, you will be charged automatically.\nCancel anytime.',
+  pricing_free_title: 'Free Plan (Current)',
+  pricing_free1: '2 basic walking meditation guides',
+  pricing_free2: 'Step counting',
+  pricing_free3: 'Basic timer',
+  pricing_free_continue: 'Continue with Free Plan',
+  pricing_error: 'Payment page is not ready yet. Please try again later.',
+  pricing_generic_error: 'An error occurred. Please try again.',
+
+  // ─── Tokusho page ───
+  tokusho_title: 'Legal Notice',
+  tokusho_sub: 'Disclosure pursuant to the Act on Specified Commercial Transactions (Japan).',
+  tokusho_contact: 'For inquiries, please contact us at aimiya121@gmail.com.',
+
+  // ─── Onboarding ───
   onboarding_title_1: 'What is Walking Meditation?',
   onboarding_body_1: 'Walking meditation has over 2,500 years of history.\n\nUnlike seated meditation, it turns your everyday walking into a meditative practice. Buddhist monks have practiced walking meditation after meals as a daily ritual, and modern research confirms its benefits for stress reduction and improved focus.',
   onboarding_title_2: 'Why Does It Work?',
@@ -111,6 +265,7 @@ const en: Translations = {
   select_stats_total_time: 'Total',
   select_stats_streak: 'Streak',
   select_stats_streak_days: 'days',
+  select_unlock_premium: 'Unlock all programs with Premium →',
 
   program_beginner_title: 'First Steps',
   program_beginner_subtitle: 'Day 1 — 5 min basics',
@@ -129,12 +284,22 @@ const en: Translations = {
   playing_pause: 'Pause',
   playing_resume: 'Resume',
   playing_end: 'End',
+  playing_breathe_in: '🫁 Breathe in...',
+  playing_breathe_out: '🫁 Breathe out...',
+  playing_breathe_hold: '⏸️ Hold...',
+  playing_prepare: 'Take a deep breath and get ready',
+  playing_earphone: 'Make sure your earphones are connected',
 
   complete_title: 'Well Done',
+  complete_subtitle: 'Another step toward inner peace',
   complete_time: 'Duration',
   complete_steps: 'Steps',
   complete_message: "Another wonderful walking meditation.\nCarry this calm with you.",
   complete_done: 'Done',
+  complete_again: 'Again',
+  complete_premium_cta: 'Go deeper with Premium →',
+  complete_cumulative: 'Total Record',
+  complete_quote_ja: '"The key to walking meditation is noticing the sensations in the soles of your feet. That alone quiets the mind."',
 
   ambient_forest: 'Forest',
   ambient_stream: 'Stream',
@@ -150,7 +315,6 @@ const en: Translations = {
 
 const translations = { ja, en } as const
 
-// Context
 interface I18nContextType {
   locale: Locale
   setLocale: (l: Locale) => void

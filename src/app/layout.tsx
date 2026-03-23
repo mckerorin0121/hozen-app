@@ -1,15 +1,14 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
+import { I18nWrapper } from '@/components/I18nWrapper'
 
 export const metadata: Metadata = {
-  title: '歩禅 HoZen - 歩くだけで、心が整う',
-  description: '歩くだけで心が整う、新しいマインドフルネス体験。歩行瞑想アプリ「歩禅」で、毎日の歩きを瞑想の時間に。',
+  title: '歩禅 HoZen - Walking Meditation',
+  description: 'Walking meditation app. Transform your daily walk into mindfulness. 歩くだけで心が整う歩行瞑想アプリ。',
   manifest: '/manifest.json',
   icons: {
-    apple: [
-      { url: '/icons/icon-192.png', sizes: '192x192' },
-    ],
+    apple: [{ url: '/icons/icon-192.png', sizes: '192x192' }],
     icon: [
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -18,7 +17,29 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: '歩禅',
+    title: '歩禅 HoZen',
+  },
+  openGraph: {
+    title: '歩禅 HoZen - Walking Meditation',
+    description: '歩くだけで、心が整う。Walk your way to inner peace.',
+    url: 'https://hozen-app.vercel.app',
+    siteName: '歩禅 HoZen',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: '歩禅 HoZen - Walking Meditation App',
+      },
+    ],
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '歩禅 HoZen - Walking Meditation',
+    description: '歩くだけで、心が整う。Walk your way to inner peace.',
+    images: ['/og-image.png'],
   },
 }
 
@@ -30,16 +51,12 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
       <body className="bg-hozen-cream text-hozen-dark antialiased">
         <ServiceWorkerRegister />
-        {children}
+        <I18nWrapper>{children}</I18nWrapper>
       </body>
     </html>
   )

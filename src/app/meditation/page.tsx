@@ -6,7 +6,7 @@ import { getPrograms, MeditationProgram, GuideStep } from '@/lib/audio-guides'
 import { StepDetector } from '@/lib/step-detector'
 import { VoiceGuide, VoiceGender } from '@/lib/tts'
 import { saveSession, getStats, formatTotalTime, SessionStats } from '@/lib/session-history'
-import { I18nProvider, useI18n, Locale } from '@/lib/i18n'
+import { useI18n, Locale } from '@/lib/i18n'
 
 type Screen = 'onboarding' | 'select' | 'prepare' | 'playing' | 'complete'
 type AmbientType = 'forest' | 'stream' | 'rain' | 'wind' | 'none'
@@ -299,7 +299,7 @@ function MeditationInner() {
       <div className="min-h-screen bg-hozen-cream">
         <div className="max-w-lg mx-auto px-6 py-8">
           <Link href="/" className="inline-flex items-center gap-2 text-hozen-green/60 hover:text-hozen-green mb-8">
-            <BackIcon /><span>{locale === 'ja' ? 'ホーム' : 'Home'}</span>
+            <BackIcon /><span>{t('home')}</span>
           </Link>
 
           <h1 className="text-3xl font-bold text-hozen-green mb-2 font-jp">{t('select_title')}</h1>
@@ -418,7 +418,7 @@ function MeditationInner() {
 
           <div className="mt-8 text-center">
             <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
-              {locale === 'ja' ? 'プレミアムで全プログラム解放 →' : 'Unlock all programs with Premium →'}
+              {t('select_unlock_premium')}
             </Link>
           </div>
         </div>
@@ -431,13 +431,13 @@ function MeditationInner() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col items-center justify-center px-6">
         <p className="text-white/60 text-lg mb-8 font-jp">
-          {locale === 'ja' ? '深呼吸して、準備しましょう' : 'Take a deep breath and get ready'}
+          {t('playing_prepare')}
         </p>
         <div className="w-32 h-32 rounded-full border-2 border-hozen-gold/40 flex items-center justify-center breathing-animation">
           <span className="text-6xl font-light text-white" aria-live="polite">{countdown > 0 ? countdown : '...'}</span>
         </div>
         <p className="text-white/40 mt-8 text-sm">
-          {locale === 'ja' ? 'イヤホンの装着を確認してください' : 'Make sure your earphones are connected'}
+          {t('playing_earphone')}
         </p>
       </div>
     )
@@ -490,11 +490,9 @@ function MeditationInner() {
               <p className="text-white text-lg leading-relaxed font-light whitespace-pre-line">{currentGuide.text}</p>
               {breathPhase && (
                 <p className="text-hozen-gold text-sm mt-3 font-medium">
-                  {breathPhase === 'in'
-                    ? (locale === 'ja' ? '🫁 吸って...' : '🫁 Breathe in...')
-                    : breathPhase === 'out'
-                    ? (locale === 'ja' ? '🫁 吐いて...' : '🫁 Breathe out...')
-                    : (locale === 'ja' ? '⏸️ 止めて...' : '⏸️ Hold...')}
+                  {breathPhase === 'in' ? t('playing_breathe_in')
+                    : breathPhase === 'out' ? t('playing_breathe_out')
+                    : t('playing_breathe_hold')}
                 </p>
               )}
             </div>
@@ -530,7 +528,7 @@ function MeditationInner() {
         <div className="text-7xl mb-6 float-animation">🙏</div>
         <h1 className="text-3xl font-bold text-white mb-3 font-jp">{t('complete_title')}</h1>
         <p className="text-white/50 text-lg mb-10">
-          {locale === 'ja' ? '今日も一歩、心が整いました' : 'Another step toward inner peace'}
+          {t('complete_subtitle')}
         </p>
 
         <div className="grid grid-cols-3 gap-6 mb-6 w-full max-w-xs">
@@ -550,7 +548,7 @@ function MeditationInner() {
 
         {stats && stats.totalSessions > 1 && (
           <div className="bg-white/5 rounded-2xl p-4 mb-10 w-full max-w-xs border border-white/10">
-            <p className="text-white/30 text-xs mb-3">{locale === 'ja' ? '累計記録' : 'Total Record'}</p>
+            <p className="text-white/30 text-xs mb-3">{t('complete_cumulative')}</p>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-lg font-bold text-white/70">{stats.totalSessions}</div>
@@ -571,9 +569,7 @@ function MeditationInner() {
         {(!stats || stats.totalSessions <= 1) && (
           <div className="bg-white/5 rounded-2xl p-6 max-w-sm mb-10 border border-white/10">
             <p className="text-white/70 text-sm leading-relaxed italic">
-              {locale === 'ja'
-                ? '「歩く瞑想の要は、足の裏の感覚に気づくこと。それだけで、心は自然と静まります。」'
-                : '"The key to walking meditation is noticing the sensations in the soles of your feet. That alone quiets the mind."'}
+              {t('complete_quote_ja')}
             </p>
             <p className="text-white/30 text-xs mt-3">— Thich Nhat Hanh</p>
           </div>
@@ -582,14 +578,14 @@ function MeditationInner() {
         <div className="space-y-3 w-full max-w-xs">
           <button onClick={() => { setScreen('select'); setElapsed(0); setSteps(0) }}
             className="w-full px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all active:scale-95">
-            {locale === 'ja' ? 'もう一度' : 'Again'}
+            {t('complete_again')}
           </button>
           <Link href="/pricing"
             className="w-full inline-block px-8 py-4 bg-white/10 text-white font-medium rounded-full text-lg border border-white/20 hover:bg-white/20 transition-all text-center">
-            {locale === 'ja' ? 'プレミアムで更に深く →' : 'Go deeper with Premium →'}
+            {t('complete_premium_cta')}
           </Link>
           <Link href="/" className="block text-white/30 hover:text-white/50 mt-4 text-sm">
-            {locale === 'ja' ? 'ホームに戻る' : 'Back to Home'}
+            {t('home')}
           </Link>
         </div>
       </div>
@@ -599,11 +595,7 @@ function MeditationInner() {
   return null
 }
 
-/* ═════════════════════ Page wrapper with I18n Provider ═════════════════════ */
+/* ═════════════════════ Page export ═════════════════════ */
 export default function MeditationPage() {
-  return (
-    <I18nProvider>
-      <MeditationInner />
-    </I18nProvider>
-  )
+  return <MeditationInner />
 }
