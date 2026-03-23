@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: '歩禅 HoZen',
   },
+  metadataBase: new URL('https://hozen-app.vercel.app'),
   openGraph: {
     title: '歩禅 HoZen - Walking Meditation',
     description: '歩くだけで、心が整う。Walk your way to inner peace.',
@@ -26,9 +27,10 @@ export const metadata: Metadata = {
     siteName: '歩禅 HoZen',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://hozen-app.vercel.app/og-image.png',
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: '歩禅 HoZen - Walking Meditation App',
       },
     ],
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '歩禅 HoZen - Walking Meditation',
     description: '歩くだけで、心が整う。Walk your way to inner peace.',
-    images: ['/og-image.png'],
+    images: ['https://hozen-app.vercel.app/og-image.png'],
   },
 }
 

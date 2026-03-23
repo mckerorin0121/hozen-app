@@ -6,6 +6,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/og-image.png',
+        headers: [
+          { key: 'Content-Type', value: 'image/png' },
+          { key: 'Cache-Control', value: 'public, max-age=86400, immutable' },
+        ],
+      },
+      {
         source: '/(.*)',
         headers: [
           // Prevent clickjacking
