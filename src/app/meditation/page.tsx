@@ -7,9 +7,12 @@ import { StepDetector } from '@/lib/step-detector'
 import { VoiceGuide, VoiceGender } from '@/lib/tts'
 import { saveSession, getStats, formatTotalTime, SessionStats } from '@/lib/session-history'
 import { useI18n, Locale } from '@/lib/i18n'
+import { playBell, playBellShort } from '@/lib/bell'
+import { FootAnimationMini } from '@/components/FootAnimation'
 
 type Screen = 'onboarding' | 'select' | 'prepare' | 'playing' | 'complete'
 type AmbientType = 'forest' | 'stream' | 'rain' | 'wind' | 'none'
+type SelectTab = 'programs' | 'course'
 
 /* ─── Icons ─── */
 function BackIcon() {
@@ -24,6 +27,9 @@ function PauseIcon() {
 function LockIcon() {
   return <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
 }
+function CheckIcon() {
+  return <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
+}
 
 /* ─── localStorage helpers ─── */
 function loadPreference<T>(key: string, defaultValue: T): T {
@@ -36,11 +42,34 @@ function loadPreference<T>(key: string, defaultValue: T): T {
   }
 }
 
+function getCourseProgress(): Set<string> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const saved = localStorage.getItem('hozen_course_progress')
+    return saved ? new Set(JSON.parse(saved)) : new Set()
+  } catch {
+    return new Set()
+  }
+}
+
+function saveCourseProgress(completed: Set<string>) {
+  try {
+    localStorage.setItem('hozen_course_progress', JSON.stringify(Array.from(completed)))
+  } catch {}
+}
+
+function vibrate(pattern: number | number[]) {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(pattern)
+  }
+}
+
 /* ═════════════════════ Inner Component (with i18n) ═════════════════════ */
 function MeditationInner() {
   const { locale, setLocale, t } = useI18n()
 
   const [screen, setScreen] = useState<Screen>('onboarding')
+  const [selectTab, setSelectTab] = useState<SelectTab>('programs')
   const [onboardingPage, setOnboardingPage] = useState(0)
   const [selectedProgram, setSelectedProgram] = useState<MeditationProgram | null>(null)
   const [ambient, setAmbient] = useState<AmbientType>(() => loadPreference('hozen_ambient', 'forest') as AmbientType)
@@ -53,6 +82,9 @@ function MeditationInner() {
   const [voiceGender, setVoiceGender] = useState<VoiceGender>(() => loadPreference('hozen_voice_gender', 'female') as VoiceGender)
   const [countdown, setCountdown] = useState(-1)
   const [stats, setStats] = useState<SessionStats | null>(null)
+  const [immersive, setImmersive] = useState(false)
+  const [courseProgress, setCourseProgress] = useState<Set<string>>(() => getCourseProgress())
+  const [footPhase, setFootPhase] = useState<'lifting' | 'moving' | 'placing' | null>(null)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const stepDetectorRef = useRef<StepDetector | null>(null)
@@ -60,6 +92,7 @@ function MeditationInner() {
   const ambientRef = useRef<HTMLAudioElement | null>(null)
   const guideIndexRef = useRef(0)
   const sessionSavedRef = useRef(false)
+  const prevGuideIndexRef = useRef(-1)
 
   // Ambient labels per locale
   const AMBIENTS: { id: AmbientType; label: string; emoji: string }[] = [
@@ -74,6 +107,7 @@ function MeditationInner() {
   const programs = getPrograms(locale, (key) => t(key as any))
   const freePrograms = programs.free
   const premiumPrograms = programs.premium
+  const coursePrograms = programs.course
 
   // Onboarding slides
   const ONBOARDING_SLIDES = [
@@ -107,6 +141,21 @@ function MeditationInner() {
     voiceRef.current?.setLocale(locale)
   }, [locale])
 
+  // Detect foot phase from guide text for FootAnimationMini
+  useEffect(() => {
+    if (!currentGuide) { setFootPhase(null); return }
+    const text = currentGuide.text.toLowerCase()
+    if (text.includes('上げる') || text.includes('lifting') || text.includes('lift')) {
+      setFootPhase('lifting')
+    } else if (text.includes('運ぶ') || text.includes('moving') || text.includes('move')) {
+      setFootPhase('moving')
+    } else if (text.includes('下ろす') || text.includes('placing') || text.includes('place') || text.includes('触れる') || text.includes('touch')) {
+      setFootPhase('placing')
+    } else {
+      setFootPhase(null)
+    }
+  }, [currentGuide])
+
   const finishOnboarding = () => {
     try { localStorage.setItem('hozen_onboarded', '1') } catch {}
     setScreen('select')
@@ -132,8 +181,22 @@ function MeditationInner() {
       steps,
       completedAt: new Date().toISOString(),
     })
+    // Mark course day as completed
+    if (selectedProgram.id.startsWith('course-day')) {
+      const updated = new Set(courseProgress)
+      updated.add(selectedProgram.id)
+      setCourseProgress(updated)
+      saveCourseProgress(updated)
+    }
     setStats(getStats())
-  }, [selectedProgram, elapsed, steps])
+  }, [selectedProgram, elapsed, steps, courseProgress])
+
+  /* ─── Course unlock logic ─── */
+  const isDayUnlocked = (dayIndex: number): boolean => {
+    if (dayIndex === 0) return true // Day 1 always unlocked
+    const prevDayId = `course-day${dayIndex}` // previous day (1-indexed in id)
+    return courseProgress.has(prevDayId)
+  }
 
   /* ─── Ambient audio ─── */
   const startAmbient = useCallback((type: AmbientType) => {
@@ -179,6 +242,7 @@ function MeditationInner() {
     setSelectedProgram(program)
     setScreen('prepare')
     sessionSavedRef.current = false
+    setImmersive(false)
 
     setCountdown(3)
     for (let i = 3; i >= 1; i--) {
@@ -186,11 +250,16 @@ function MeditationInner() {
       setCountdown(i - 1)
     }
 
+    // Play start bell
+    playBell(0.35).catch(() => {})
+    vibrate(200)
+
     setScreen('playing')
     setElapsed(0)
     setSteps(0)
     setIsPlaying(true)
     guideIndexRef.current = 0
+    prevGuideIndexRef.current = -1
     startAmbient(ambient)
 
     const detector = new StepDetector((count) => setSteps(count))
@@ -198,9 +267,16 @@ function MeditationInner() {
     await detector.start()
 
     if (program.steps.length > 0) {
-      setCurrentGuide(program.steps[0])
-      setBreathPhase(program.steps[0].breathe || null)
-      voiceRef.current?.speak(program.steps[0].speech, program.steps[0].fileKey)
+      const firstStep = program.steps[0]
+      setCurrentGuide(firstStep)
+      setBreathPhase(firstStep.breathe || null)
+      // For Day 7 (bell-only), play bell instead of voice
+      if (firstStep.fileKey?.startsWith('bell_')) {
+        if (firstStep.fileKey === 'bell_start') playBell(0.3).catch(() => {})
+        else playBellShort(0.25).catch(() => {})
+      } else if (firstStep.speech) {
+        voiceRef.current?.speak(firstStep.speech, firstStep.fileKey)
+      }
     }
   }, [ambient, startAmbient])
 
@@ -214,11 +290,28 @@ function MeditationInner() {
           const nextIndex = guideIndexRef.current + 1
           if (nextIndex < programSteps.length && next >= programSteps[nextIndex].time) {
             guideIndexRef.current = nextIndex
-            setCurrentGuide(programSteps[nextIndex])
-            setBreathPhase(programSteps[nextIndex].breathe || null)
-            if (!voiceMuted) voiceRef.current?.speak(programSteps[nextIndex].speech, programSteps[nextIndex].fileKey)
+            const step = programSteps[nextIndex]
+            setCurrentGuide(step)
+            setBreathPhase(step.breathe || null)
+
+            // Vibrate on guide step change
+            vibrate(100)
+
+            if (!voiceMuted) {
+              // Bell-only steps (Day 7)
+              if (step.fileKey?.startsWith('bell_')) {
+                if (step.fileKey === 'bell_half') playBellShort(0.25).catch(() => {})
+                else if (step.fileKey === 'bell_end') playBell(0.35).catch(() => {})
+                else playBell(0.3).catch(() => {})
+              } else if (step.speech) {
+                voiceRef.current?.speak(step.speech, step.fileKey)
+              }
+            }
           }
           if (next >= totalSeconds) {
+            // Play end bell
+            playBell(0.4).catch(() => {})
+            vibrate([200, 100, 200])
             setIsPlaying(false)
             setScreen('complete')
             stepDetectorRef.current?.stop()
@@ -248,6 +341,7 @@ function MeditationInner() {
     voiceRef.current?.stop()
     stopAmbient()
     if (timerRef.current) clearInterval(timerRef.current)
+    playBellShort(0.25).catch(() => {})
     setScreen('complete')
   }
 
@@ -324,103 +418,211 @@ function MeditationInner() {
             </div>
           )}
 
-          {/* Language selector */}
-          <div className="mb-6">
-            <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_language')}</p>
-            <div className="flex gap-2">
-              <button onClick={() => switchLocale('ja')}
-                aria-pressed={locale === 'ja'}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${locale === 'ja' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                🇯🇵 日本語
-              </button>
-              <button onClick={() => switchLocale('en')}
-                aria-pressed={locale === 'en'}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${locale === 'en' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                🇺🇸 English
-              </button>
-            </div>
+          {/* Tab selector: Programs / 7-Day Course */}
+          <div className="flex bg-white rounded-2xl p-1 mb-6 border border-hozen-green/10">
+            <button
+              onClick={() => setSelectTab('programs')}
+              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${selectTab === 'programs' ? 'bg-hozen-green text-white shadow-sm' : 'text-hozen-dark/50 hover:text-hozen-dark/70'}`}>
+              {t('select_title')}
+            </button>
+            <button
+              onClick={() => setSelectTab('course')}
+              className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${selectTab === 'course' ? 'bg-hozen-green text-white shadow-sm' : 'text-hozen-dark/50 hover:text-hozen-dark/70'}`}>
+              {t('course_title')}
+            </button>
           </div>
 
-          {/* Ambient selector */}
-          <div className="mb-6">
-            <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_ambient')}</p>
-            <div className="flex gap-2 flex-wrap">
-              {AMBIENTS.map(a => (
-                <button key={a.id} onClick={() => setAmbient(a.id)}
-                  aria-pressed={ambient === a.id}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${ambient === a.id ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                  {a.emoji} {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          {selectTab === 'programs' && (
+            <>
+              {/* Language selector */}
+              <div className="mb-6">
+                <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_language')}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => switchLocale('ja')}
+                    aria-pressed={locale === 'ja'}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${locale === 'ja' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
+                    🇯🇵 日本語
+                  </button>
+                  <button onClick={() => switchLocale('en')}
+                    aria-pressed={locale === 'en'}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${locale === 'en' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
+                    🇺🇸 English
+                  </button>
+                </div>
+              </div>
 
-          {/* Voice gender selector */}
-          <div className="mb-8">
-            <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_voice')}</p>
-            <div className="flex gap-2">
-              <button onClick={() => switchVoiceGender('female')}
-                aria-pressed={voiceGender === 'female'}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${voiceGender === 'female' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                👩 {t('select_voice_female')}{locale === 'ja' ? '（Shiori）' : ' (Aria)'}
-              </button>
-              <button onClick={() => switchVoiceGender('male')}
-                aria-pressed={voiceGender === 'male'}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${voiceGender === 'male' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                👨 {t('select_voice_male')}{locale === 'ja' ? '（Daichi）' : ' (Guy)'}
-              </button>
-            </div>
-          </div>
+              {/* Ambient selector */}
+              <div className="mb-6">
+                <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_ambient')}</p>
+                <div className="flex gap-2 flex-wrap">
+                  {AMBIENTS.map(a => (
+                    <button key={a.id} onClick={() => setAmbient(a.id)}
+                      aria-pressed={ambient === a.id}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${ambient === a.id ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
+                      {a.emoji} {a.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* Free */}
-          <div className="mb-8">
-            <h2 className="text-sm font-semibold text-hozen-green/60 uppercase tracking-wider mb-4">{t('select_free')}</h2>
-            <div className="space-y-3">
-              {freePrograms.map(p => (
-                <button key={p.id} onClick={() => startMeditation(p)}
-                  className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-hozen-green text-lg font-jp">{p.title}</h3>
-                      <p className="text-hozen-dark/50 text-sm mt-1">{p.subtitle}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
-                      <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><PlayIcon /></div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+              {/* Voice gender selector */}
+              <div className="mb-8">
+                <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_voice')}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => switchVoiceGender('female')}
+                    aria-pressed={voiceGender === 'female'}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${voiceGender === 'female' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
+                    👩 {t('select_voice_female')}{locale === 'ja' ? '（Shiori）' : ' (Aria)'}
+                  </button>
+                  <button onClick={() => switchVoiceGender('male')}
+                    aria-pressed={voiceGender === 'male'}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${voiceGender === 'male' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
+                    👨 {t('select_voice_male')}{locale === 'ja' ? '（Daichi）' : ' (Guy)'}
+                  </button>
+                </div>
+              </div>
 
-          {/* Premium */}
-          <div>
-            <h2 className="text-sm font-semibold text-hozen-gold uppercase tracking-wider mb-4">{t('select_premium')} ✨</h2>
-            <div className="space-y-3">
-              {premiumPrograms.map(p => (
-                <button key={p.id} onClick={() => startMeditation(p)}
-                  className="w-full text-left bg-white/60 rounded-2xl p-5 border border-hozen-gold/20 hover:border-hozen-gold/40 transition-all active:scale-[0.98]">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-hozen-dark/80 text-lg font-jp">{p.title}</h3>
-                      <p className="text-hozen-dark/40 text-sm mt-1">{p.subtitle}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
-                      <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><LockIcon /></div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+              {/* Free */}
+              <div className="mb-8">
+                <h2 className="text-sm font-semibold text-hozen-green/60 uppercase tracking-wider mb-4">{t('select_free')}</h2>
+                <div className="space-y-3">
+                  {freePrograms.map(p => (
+                    <button key={p.id} onClick={() => startMeditation(p)}
+                      className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-bold text-hozen-green text-lg font-jp">{p.title}</h3>
+                          <p className="text-hozen-dark/50 text-sm mt-1">{p.subtitle}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
+                          <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><PlayIcon /></div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className="mt-8 text-center">
-            <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
-              {t('select_unlock_premium')}
-            </Link>
-          </div>
+              {/* Premium */}
+              <div>
+                <h2 className="text-sm font-semibold text-hozen-gold uppercase tracking-wider mb-4">{t('select_premium')} ✨</h2>
+                <div className="space-y-3">
+                  {premiumPrograms.map(p => (
+                    <button key={p.id} onClick={() => startMeditation(p)}
+                      className="w-full text-left bg-white/60 rounded-2xl p-5 border border-hozen-gold/20 hover:border-hozen-gold/40 transition-all active:scale-[0.98]">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-bold text-hozen-dark/80 text-lg font-jp">{p.title}</h3>
+                          <p className="text-hozen-dark/40 text-sm mt-1">{p.subtitle}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
+                          <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><LockIcon /></div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
+                  {t('select_unlock_premium')}
+                </Link>
+              </div>
+            </>
+          )}
+
+          {/* ─── 7-Day Course Tab ─── */}
+          {selectTab === 'course' && (
+            <div>
+              <p className="text-hozen-dark/50 text-sm mb-6">{t('course_sub')}</p>
+
+              {/* Course progress bar */}
+              <div className="bg-white rounded-2xl p-4 mb-6 border border-hozen-green/10">
+                <div className="flex gap-1 mb-2">
+                  {coursePrograms.map((_, i) => (
+                    <div key={i} className={`flex-1 h-2 rounded-full transition-all ${
+                      courseProgress.has(`course-day${i + 1}`) ? 'bg-hozen-gold' : 'bg-hozen-dark/10'
+                    }`} />
+                  ))}
+                </div>
+                <p className="text-xs text-hozen-dark/40 text-center">
+                  {courseProgress.size} / {coursePrograms.length} {t('course_completed')}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {coursePrograms.map((p, i) => {
+                  const isCompleted = courseProgress.has(p.id)
+                  const isUnlocked = isDayUnlocked(i) && !p.isPremium
+                  const isPremiumLocked = p.isPremium && !isCompleted
+
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        if (isUnlocked || isCompleted) startMeditation(p)
+                        else if (isPremiumLocked) window.location.href = '/pricing'
+                      }}
+                      disabled={!isUnlocked && !isCompleted && !isPremiumLocked}
+                      className={`w-full text-left rounded-2xl p-5 transition-all active:scale-[0.98] ${
+                        isCompleted
+                          ? 'bg-hozen-green/5 border-2 border-hozen-green/20'
+                          : isUnlocked
+                            ? 'bg-white shadow-sm hover:shadow-md border border-hozen-green/5'
+                            : 'bg-white/40 border border-hozen-dark/5 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                            isCompleted ? 'bg-hozen-green text-white' :
+                            isUnlocked ? 'bg-hozen-gold/10 text-hozen-gold' :
+                            'bg-hozen-dark/10 text-hozen-dark/30'
+                          }`}>
+                            {isCompleted ? <CheckIcon /> : i + 1}
+                          </div>
+                          <div>
+                            <h3 className={`font-bold text-base font-jp ${isCompleted ? 'text-hozen-green' : isUnlocked ? 'text-hozen-dark/80' : 'text-hozen-dark/40'}`}>
+                              {p.title}
+                            </h3>
+                            <p className={`text-xs mt-0.5 ${isCompleted ? 'text-hozen-green/60' : 'text-hozen-dark/40'}`}>
+                              {p.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-hozen-dark/30">{p.duration}{t('select_minutes')}</span>
+                          {!isUnlocked && !isCompleted && (
+                            <LockIcon />
+                          )}
+                          {isUnlocked && !isCompleted && (
+                            <div className="w-8 h-8 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold">
+                              <PlayIcon size={16} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {!isUnlocked && !isCompleted && !isPremiumLocked && (
+                        <p className="text-xs text-hozen-dark/30 mt-2 ml-14">{t('course_locked')}</p>
+                      )}
+                      {isPremiumLocked && !isCompleted && (
+                        <p className="text-xs text-hozen-gold/60 mt-2 ml-14">{t('select_premium')} ✨</p>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="mt-8 text-center">
+                <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
+                  {t('select_unlock_premium')}
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -448,6 +650,52 @@ function MeditationInner() {
     const totalSeconds = selectedProgram.duration * 60
     const progress = elapsed / totalSeconds
 
+    // Immersive mode: dark minimal screen
+    if (immersive) {
+      return (
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 relative" onClick={() => {}}>
+          {/* Minimal top bar */}
+          <div className="absolute top-8 left-6 right-6 flex justify-between items-center z-10">
+            <button onClick={() => setImmersive(false)} className="text-white/20 text-xs hover:text-white/40 transition-all">
+              {t('immersive_off')}
+            </button>
+            <button onClick={stopMeditation} className="text-white/20 text-xs hover:text-white/40 transition-all">
+              {t('playing_end')}
+            </button>
+          </div>
+
+          {/* Center: just time */}
+          <div className="text-white/15 text-6xl font-light tabular-nums mb-4">
+            {formatTime(elapsed)}
+          </div>
+          <div className="text-white/10 text-sm mb-8">
+            / {formatTime(totalSeconds)}
+          </div>
+
+          {/* Subtle progress bar */}
+          <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-hozen-gold/30 rounded-full transition-all duration-1000" style={{ width: `${progress * 100}%` }} />
+          </div>
+
+          {/* Guide text (very subtle) */}
+          {currentGuide && currentGuide.text && (
+            <div className="absolute bottom-24 left-6 right-6 text-center" aria-live="polite">
+              <p className="text-white/15 text-sm leading-relaxed whitespace-pre-line">{currentGuide.text}</p>
+            </div>
+          )}
+
+          {/* Play/pause at bottom */}
+          <div className="absolute bottom-8 flex items-center gap-6">
+            <button onClick={togglePlay}
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white/20 hover:text-white/40 transition-all">
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    // Normal playing mode
     return (
       <div className="min-h-screen bg-gradient-to-b from-hozen-green via-hozen-green-light to-hozen-green flex flex-col items-center justify-center px-6 relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -457,12 +705,19 @@ function MeditationInner() {
           ))}
         </div>
 
-        <button onClick={stopMeditation} className="absolute top-8 right-6 text-white/30 hover:text-white/60 text-sm z-10">
-          {t('playing_end')}
-        </button>
-
-        <div className="absolute top-8 left-6 text-white/20 text-sm z-10">
-          {AMBIENTS.find(a => a.id === ambient)?.emoji} {AMBIENTS.find(a => a.id === ambient)?.label}
+        {/* Top bar */}
+        <div className="absolute top-8 left-6 right-6 flex justify-between items-center z-10">
+          <div className="text-white/20 text-sm">
+            {AMBIENTS.find(a => a.id === ambient)?.emoji} {AMBIENTS.find(a => a.id === ambient)?.label}
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setImmersive(true)} className="text-white/30 hover:text-white/60 text-xs transition-all px-2 py-1 rounded-full border border-white/10 hover:border-white/20">
+              {t('immersive_on')}
+            </button>
+            <button onClick={stopMeditation} className="text-white/30 hover:text-white/60 text-sm">
+              {t('playing_end')}
+            </button>
+          </div>
         </div>
 
         <div className="relative mb-10 z-10">
@@ -484,8 +739,15 @@ function MeditationInner() {
           </svg>
         </div>
 
+        {/* Foot animation mini */}
+        {footPhase && (
+          <div className="z-10 mb-4">
+            <FootAnimationMini phase={footPhase} locale={locale} />
+          </div>
+        )}
+
         <div className="text-center mb-10 min-h-[100px] z-10 max-w-sm">
-          {currentGuide && (
+          {currentGuide && currentGuide.text && (
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-5 border border-white/10" aria-live="polite">
               <p className="text-white text-lg leading-relaxed font-light whitespace-pre-line">{currentGuide.text}</p>
               {breathPhase && (

@@ -20,6 +20,16 @@ const ja = {
   hero_cta: '無料で体験する',
   hero_pricing: 'プランを見る',
 
+  // ─── What is Walking Meditation ───
+  what_title: '歩く瞑想とは？',
+  what_lead: 'テーラワーダ仏教に伝わる、2,500年以上の歴史を持つ瞑想法。',
+  what_block1_title: '足の裏に集中する瞑想',
+  what_block1_body: '歩行瞑想（チャンカマナ）は、テーラワーダ仏教の僧侶たちが2,500年以上続けてきた伝統的な修行法です。足を「上げる・運ぶ・下ろす」——この一歩一歩の動きに意識を向け、足の裏の感覚だけに集中します。シンプルだからこそ深い。それが歩行瞑想の本質です。',
+  what_block2_title: '「今ここ」に戻る力',
+  what_block2_body: '私たちの心は常に過去の後悔や未来の不安にさまよっています。歩行瞑想では、足の裏の感覚という「今ここ」の体験に繰り返し注意を戻す練習をします。考えが浮かんだら「考え」と気づき、足の裏に戻る。この単純な繰り返しが、心を驚くほど静かにします。',
+  what_block3_title: '誰でも、今すぐ、どこでも',
+  what_block3_body: '特別な場所も道具も不要。通勤中、昼休み、夕方の散歩——いつもの歩きが瞑想に変わります。歩禅は音声ガイドで「上げる・運ぶ・下ろす」の気づきを一歩ずつ導くので、初めての方でも5分で足の裏への集中を体験できます。',
+
   features_title: '歩禅の特長',
   features_sub: 'テクノロジーとマインドフルネスの融合で、\nあなたの歩きが変わります。',
   feature1_title: '歩行連動ガイド',
@@ -85,9 +95,9 @@ const ja = {
 
   // ─── Onboarding ───
   onboarding_title_1: '歩く瞑想って？',
-  onboarding_body_1: '歩行瞑想（ウォーキングメディテーション）は、2500年以上の歴史を持つ瞑想法です。\n\n座る瞑想と違い、日常の「歩く」動作そのものを瞑想の対象にします。仏教の僧侶たちは食後の歩行瞑想を日課としており、現代の研究でもストレス軽減・集中力向上の効果が実証されています。',
+  onboarding_body_1: '歩行瞑想（チャンカマナ）は、テーラワーダ仏教に伝わる2,500年以上の歴史を持つ瞑想法です。\n\n足を「上げる・運ぶ・下ろす」——この一歩一歩の動きに意識を向け、足の裏の感覚だけに集中します。座る瞑想と並ぶ、伝統的な修行法です。',
   onboarding_title_2: 'なぜ効くの？',
-  onboarding_body_2: '歩くとき、私たちの脳は無意識にたくさんのことを処理しています。足裏の感覚、バランス、周囲の音...\n\nこれらに「意識的に」注意を向けることで、過去の後悔や未来の不安から離れ、「今ここ」に意識が集中します。\n\nたった5分間の歩行瞑想で、脳のストレスホルモン（コルチゾール）が平均23%低下するという研究結果もあります。',
+  onboarding_body_2: '私たちの心は常に過去や未来にさまよっています。\n\n歩行瞑想では、足の裏の感覚という「今ここ」の体験に繰り返し注意を戻します。考えが浮かんだら「考え」と気づき、足の裏に戻る。\n\nこの単純な繰り返しが、心を驚くほど静かにし、集中力を高めます。',
   onboarding_title_3: '歩禅の使い方',
   onboarding_body_3: '① プログラムを選ぶ\n② 環境音とナレーション声を設定\n③ スタートして、歩き始める\n\n音声ガイドが一歩ずつ導いてくれます。特別な準備は不要。今いる場所で、今すぐ始められます。',
   onboarding_skip: 'スキップ',
@@ -126,6 +136,31 @@ const ja = {
   program_focus_title: '集中力ブースト',
   program_focus_subtitle: '5分間のフォーカス瞑想',
 
+  // ─── 7-Day Course ───
+  course_title: '7日間コース',
+  course_sub: 'テーラワーダの伝統に沿った段階的プログラム',
+  course_day: 'Day',
+  course_locked: '前日を完了すると解放',
+  course_completed: '完了済み',
+  program_cd1_title: 'Day 1：左右の気づき',
+  program_cd1_subtitle: '5分 — 最もシンプルな気づき',
+  program_cd2_title: 'Day 2：上げる・下ろす',
+  program_cd2_subtitle: '5分 — 2段階のノーティング',
+  program_cd3_title: 'Day 3：上げる・運ぶ・下ろす',
+  program_cd3_subtitle: '5分 — 3段階のノーティング',
+  program_cd4_title: 'Day 4：意図の観察',
+  program_cd4_subtitle: '7分 — 動く前の意図に気づく',
+  program_cd5_title: 'Day 5：細密な観察',
+  program_cd5_subtitle: '7分 — 最も細かいノーティング',
+  program_cd6_title: 'Day 6：自立練習',
+  program_cd6_subtitle: '10分 — 最小限のガイド',
+  program_cd7_title: 'Day 7：サイレント歩禅',
+  program_cd7_subtitle: '10分 — ベルのみ、完全な静寂',
+
+  // ─── Immersive mode ───
+  immersive_on: '没入モード',
+  immersive_off: '通常モード',
+
   // ─── Playing screen ───
   playing_steps: '歩',
   playing_pause: '一時停止',
@@ -147,7 +182,7 @@ const ja = {
   complete_again: 'もう一度',
   complete_premium_cta: 'プレミアムで更に深く →',
   complete_cumulative: '累計記録',
-  complete_quote_ja: '「歩く瞑想の要は、足の裏の感覚に気づくこと。それだけで、心は自然と静まります。」',
+  complete_quote_ja: '「足の裏の感覚に気づくこと。上げる、運ぶ、下ろす。それだけで、心は自然と静まります。」',
 
   // ─── Ambient ───
   ambient_forest: '森',
@@ -175,6 +210,16 @@ const en: Translations = {
   hero_sub: 'Turn your daily walk into meditation.',
   hero_cta: 'Try for Free',
   hero_pricing: 'View Plans',
+
+  // ─── What is Walking Meditation ───
+  what_title: 'What is Walking Meditation?',
+  what_lead: 'A 2,500-year-old meditation practice from Theravada Buddhism.',
+  what_block1_title: 'Meditation Through Your Feet',
+  what_block1_body: 'Walking meditation (Cankamana) is a traditional practice maintained by Theravada Buddhist monks for over 2,500 years. "Lifting... moving... placing..." — you bring full awareness to each step, focusing solely on the sensations in the soles of your feet. Simple, yet profoundly deep. That is the essence of walking meditation.',
+  what_block2_title: 'Returning to the Here and Now',
+  what_block2_body: 'Our minds constantly wander to past regrets and future worries. In walking meditation, you practice returning attention again and again to the present-moment experience of your foot soles. When thoughts arise, you simply note "thinking" and return to your feet. This simple repetition quiets the mind remarkably.',
+  what_block3_title: 'Anyone, Anytime, Anywhere',
+  what_block3_body: 'No special place or equipment needed. During your commute, lunch break, or evening stroll — your everyday walk becomes meditation. HoZen guides you step by step through "lifting, moving, placing" awareness, so even complete beginners can experience focused attention in just 5 minutes.',
 
   features_title: 'Why HoZen',
   features_sub: 'Where technology meets mindfulness —\ntransform every step.',
@@ -241,9 +286,9 @@ const en: Translations = {
 
   // ─── Onboarding ───
   onboarding_title_1: 'What is Walking Meditation?',
-  onboarding_body_1: 'Walking meditation has over 2,500 years of history.\n\nUnlike seated meditation, it turns your everyday walking into a meditative practice. Buddhist monks have practiced walking meditation after meals as a daily ritual, and modern research confirms its benefits for stress reduction and improved focus.',
+  onboarding_body_1: 'Walking meditation (Cankamana) is a practice from Theravada Buddhism with over 2,500 years of history.\n\n"Lifting... moving... placing..." — you bring awareness to each step, focusing solely on the sensations in the soles of your feet. It is one of the core meditation practices alongside seated meditation.',
   onboarding_title_2: 'Why Does It Work?',
-  onboarding_body_2: 'When we walk, our brain unconsciously processes many things — the sensation in our feet, balance, surrounding sounds...\n\nBy consciously directing attention to these, we move away from past regrets and future anxieties, focusing on the "here and now."\n\nResearch shows that just 5 minutes of walking meditation can reduce cortisol (stress hormone) levels by an average of 23%.',
+  onboarding_body_2: 'Our minds constantly wander to the past and the future.\n\nIn walking meditation, you practice returning attention again and again to the present-moment experience of your foot soles. When thoughts arise, note "thinking" and return to your feet.\n\nThis simple repetition remarkably quiets the mind and sharpens focus.',
   onboarding_title_3: 'How to Use HoZen',
   onboarding_body_3: '① Choose a program\n② Set ambient sound and narrator voice\n③ Tap start and begin walking\n\nThe voice guide will lead you step by step. No special preparation needed. Start right where you are, right now.',
   onboarding_skip: 'Skip',
@@ -280,6 +325,31 @@ const en: Translations = {
   program_focus_title: 'Focus Boost',
   program_focus_subtitle: '5 min focus meditation',
 
+  // ─── 7-Day Course ───
+  course_title: '7-Day Course',
+  course_sub: 'A progressive program following Theravada tradition',
+  course_day: 'Day',
+  course_locked: 'Complete previous day to unlock',
+  course_completed: 'Completed',
+  program_cd1_title: 'Day 1: Left & Right',
+  program_cd1_subtitle: '5 min — simplest awareness',
+  program_cd2_title: 'Day 2: Lifting & Placing',
+  program_cd2_subtitle: '5 min — two-part noting',
+  program_cd3_title: 'Day 3: Lifting, Moving, Placing',
+  program_cd3_subtitle: '5 min — three-part noting',
+  program_cd4_title: 'Day 4: Intention',
+  program_cd4_subtitle: '7 min — noticing intention before movement',
+  program_cd5_title: 'Day 5: Fine Observation',
+  program_cd5_subtitle: '7 min — the finest level of noting',
+  program_cd6_title: 'Day 6: Self-Guided',
+  program_cd6_subtitle: '10 min — minimal guidance',
+  program_cd7_title: 'Day 7: Silent Walk',
+  program_cd7_subtitle: '10 min — bell only, complete silence',
+
+  // ─── Immersive mode ───
+  immersive_on: 'Immersive',
+  immersive_off: 'Normal',
+
   playing_steps: 'steps',
   playing_pause: 'Pause',
   playing_resume: 'Resume',
@@ -299,7 +369,7 @@ const en: Translations = {
   complete_again: 'Again',
   complete_premium_cta: 'Go deeper with Premium →',
   complete_cumulative: 'Total Record',
-  complete_quote_ja: '"The key to walking meditation is noticing the sensations in the soles of your feet. That alone quiets the mind."',
+  complete_quote_ja: '"Notice the soles of your feet. Lifting, moving, placing. That alone quiets the mind."',
 
   ambient_forest: 'Forest',
   ambient_stream: 'Stream',

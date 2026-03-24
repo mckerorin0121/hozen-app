@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
+import FootAnimation from '@/components/FootAnimation'
 
 function LeafIcon({ className }: { className?: string }) {
   return (
@@ -114,6 +115,39 @@ export default function Home() {
       </section>
 
       <WaveIcon />
+
+      {/* What is Walking Meditation? */}
+      <section className="py-24 px-6 bg-hozen-cream">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-hozen-green mb-4 font-jp">{t('what_title')}</h2>
+          <p className="text-center text-hozen-dark/60 mb-12 max-w-2xl mx-auto">{t('what_lead')}</p>
+
+          {/* Foot Animation Demo */}
+          <div className="flex justify-center mb-16">
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-hozen-green/10 text-hozen-green">
+              <FootAnimation phase="auto" size="large" showLabels locale={locale} />
+            </div>
+          </div>
+
+          <div className="space-y-12">
+            {[
+              { icon: '🧘', titleKey: 'what_block1_title' as const, bodyKey: 'what_block1_body' as const },
+              { icon: '🔬', titleKey: 'what_block2_title' as const, bodyKey: 'what_block2_body' as const },
+              { icon: '🌍', titleKey: 'what_block3_title' as const, bodyKey: 'what_block3_body' as const },
+            ].map((block, i) => (
+              <div key={i} className="flex items-start gap-6">
+                <div className="flex-shrink-0 w-16 h-16 bg-hozen-green/5 rounded-2xl flex items-center justify-center text-3xl">
+                  {block.icon}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-hozen-green mb-3 font-jp">{t(block.titleKey)}</h3>
+                  <p className="text-hozen-dark/70 leading-relaxed">{t(block.bodyKey)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Features */}
       <section className="py-24 px-6 bg-hozen-cream">
