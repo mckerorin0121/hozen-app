@@ -448,13 +448,12 @@ const PROGRAMS_JA = {
   free: [
     { id: 'beginner-day1', steps: JA_BEGINNER_STEPS },
     { id: 'timer-5', steps: JA_TIMER_STEPS },
-  ],
-  premium: [
     { id: 'stress-relief', steps: JA_STRESS_STEPS },
     { id: 'morning-energy', steps: JA_MORNING_STEPS },
     { id: 'evening-calm', steps: JA_EVENING_STEPS },
     { id: 'focus-boost', steps: JA_FOCUS_STEPS },
   ],
+  premium: [],
   course: [
     { id: 'course-day1', steps: JA_COURSE_DAY1_STEPS },
     { id: 'course-day2', steps: JA_COURSE_DAY2_STEPS },
@@ -470,13 +469,12 @@ const PROGRAMS_EN = {
   free: [
     { id: 'beginner-day1', steps: EN_BEGINNER_STEPS },
     { id: 'timer-5', steps: EN_TIMER_STEPS },
-  ],
-  premium: [
     { id: 'stress-relief', steps: EN_STRESS_STEPS },
     { id: 'morning-energy', steps: EN_MORNING_STEPS },
     { id: 'evening-calm', steps: EN_EVENING_STEPS },
     { id: 'focus-boost', steps: EN_FOCUS_STEPS },
   ],
+  premium: [],
   course: [
     { id: 'course-day1', steps: EN_COURSE_DAY1_STEPS },
     { id: 'course-day2', steps: EN_COURSE_DAY2_STEPS },
@@ -499,17 +497,17 @@ interface ProgramMeta {
 const PROGRAM_META: ProgramMeta[] = [
   { id: 'beginner-day1', duration: 5, isPremium: false },
   { id: 'timer-5', duration: 5, isPremium: false },
-  { id: 'stress-relief', duration: 10, isPremium: true },
-  { id: 'morning-energy', duration: 7, isPremium: true },
-  { id: 'evening-calm', duration: 10, isPremium: true },
-  { id: 'focus-boost', duration: 5, isPremium: true },
+  { id: 'stress-relief', duration: 10, isPremium: false },
+  { id: 'morning-energy', duration: 7, isPremium: false },
+  { id: 'evening-calm', duration: 10, isPremium: false },
+  { id: 'focus-boost', duration: 5, isPremium: false },
   { id: 'course-day1', duration: 5, isPremium: false },
   { id: 'course-day2', duration: 5, isPremium: false },
   { id: 'course-day3', duration: 5, isPremium: false },
-  { id: 'course-day4', duration: 7, isPremium: true },
-  { id: 'course-day5', duration: 7, isPremium: true },
-  { id: 'course-day6', duration: 10, isPremium: true },
-  { id: 'course-day7', duration: 10, isPremium: true },
+  { id: 'course-day4', duration: 7, isPremium: false },
+  { id: 'course-day5', duration: 7, isPremium: false },
+  { id: 'course-day6', duration: 10, isPremium: false },
+  { id: 'course-day7', duration: 10, isPremium: false },
 ]
 
 /**

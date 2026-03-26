@@ -100,9 +100,6 @@ export default function Home() {
             <Link href="/meditation" className="px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all transform hover:scale-105 shadow-lg">
               {t('hero_cta')}
             </Link>
-            <Link href="/pricing" className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-medium rounded-full text-lg border border-white/20 hover:bg-white/20 transition-all">
-              {t('hero_pricing')}
-            </Link>
           </div>
         </div>
 

@@ -105,8 +105,7 @@ function MeditationInner() {
 
   // Programs for current locale
   const programs = getPrograms(locale, (key) => t(key as any))
-  const freePrograms = programs.free
-  const premiumPrograms = programs.premium
+  const allPrograms = [...programs.free, ...programs.premium]
   const coursePrograms = programs.course
 
   // Onboarding slides
@@ -228,8 +227,6 @@ function MeditationInner() {
 
   /* ─── Meditation lifecycle ─── */
   const startMeditation = useCallback(async (program: MeditationProgram) => {
-    if (program.isPremium) { window.location.href = '/pricing'; return }
-
     await voiceRef.current?.unlock()
 
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -482,54 +479,23 @@ function MeditationInner() {
                 </div>
               </div>
 
-              {/* Free */}
-              <div className="mb-8">
-                <h2 className="text-sm font-semibold text-hozen-green/60 uppercase tracking-wider mb-4">{t('select_free')}</h2>
-                <div className="space-y-3">
-                  {freePrograms.map(p => (
-                    <button key={p.id} onClick={() => startMeditation(p)}
-                      className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-bold text-hozen-green text-lg font-jp">{p.title}</h3>
-                          <p className="text-hozen-dark/50 text-sm mt-1">{p.subtitle}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
-                          <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><PlayIcon /></div>
-                        </div>
+              {/* All Programs */}
+              <div className="space-y-3">
+                {allPrograms.map(p => (
+                  <button key={p.id} onClick={() => startMeditation(p)}
+                    className="w-full text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-hozen-green/5 active:scale-[0.98]">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-bold text-hozen-green text-lg font-jp">{p.title}</h3>
+                        <p className="text-hozen-dark/50 text-sm mt-1">{p.subtitle}</p>
                       </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Premium */}
-              <div>
-                <h2 className="text-sm font-semibold text-hozen-gold uppercase tracking-wider mb-4">{t('select_premium')} ✨</h2>
-                <div className="space-y-3">
-                  {premiumPrograms.map(p => (
-                    <button key={p.id} onClick={() => startMeditation(p)}
-                      className="w-full text-left bg-white/60 rounded-2xl p-5 border border-hozen-gold/20 hover:border-hozen-gold/40 transition-all active:scale-[0.98]">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-bold text-hozen-dark/80 text-lg font-jp">{p.title}</h3>
-                          <p className="text-hozen-dark/40 text-sm mt-1">{p.subtitle}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
-                          <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><LockIcon /></div>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-hozen-dark/40">{p.duration}{t('select_minutes')}</span>
+                        <div className="w-10 h-10 bg-hozen-gold/10 rounded-full flex items-center justify-center text-hozen-gold"><PlayIcon /></div>
                       </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-8 text-center">
-                <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
-                  {t('select_unlock_premium')}
-                </Link>
+                    </div>
+                  </button>
+                ))}
               </div>
             </>
           )}
@@ -556,17 +522,15 @@ function MeditationInner() {
               <div className="space-y-3">
                 {coursePrograms.map((p, i) => {
                   const isCompleted = courseProgress.has(p.id)
-                  const isUnlocked = isDayUnlocked(i) && !p.isPremium
-                  const isPremiumLocked = p.isPremium && !isCompleted
+                  const isUnlocked = isDayUnlocked(i)
 
                   return (
                     <button
                       key={p.id}
                       onClick={() => {
                         if (isUnlocked || isCompleted) startMeditation(p)
-                        else if (isPremiumLocked) window.location.href = '/pricing'
                       }}
-                      disabled={!isUnlocked && !isCompleted && !isPremiumLocked}
+                      disabled={!isUnlocked && !isCompleted}
                       className={`w-full text-left rounded-2xl p-5 transition-all active:scale-[0.98] ${
                         isCompleted
                           ? 'bg-hozen-green/5 border-2 border-hozen-green/20'
@@ -605,21 +569,12 @@ function MeditationInner() {
                           )}
                         </div>
                       </div>
-                      {!isUnlocked && !isCompleted && !isPremiumLocked && (
+                      {!isUnlocked && !isCompleted && (
                         <p className="text-xs text-hozen-dark/30 mt-2 ml-14">{t('course_locked')}</p>
-                      )}
-                      {isPremiumLocked && !isCompleted && (
-                        <p className="text-xs text-hozen-gold/60 mt-2 ml-14">{t('select_premium')} ✨</p>
                       )}
                     </button>
                   )
                 })}
-              </div>
-
-              <div className="mt-8 text-center">
-                <Link href="/pricing" className="text-hozen-gold font-semibold hover:underline">
-                  {t('select_unlock_premium')}
-                </Link>
               </div>
             </div>
           )}
@@ -842,10 +797,6 @@ function MeditationInner() {
             className="w-full px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all active:scale-95">
             {t('complete_again')}
           </button>
-          <Link href="/pricing"
-            className="w-full inline-block px-8 py-4 bg-white/10 text-white font-medium rounded-full text-lg border border-white/20 hover:bg-white/20 transition-all text-center">
-            {t('complete_premium_cta')}
-          </Link>
           <Link href="/" className="block text-white/30 hover:text-white/50 mt-4 text-sm">
             {t('home')}
           </Link>
