@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, PRICE_IDS } from '@/lib/stripe'
+import { stripe } from '@/lib/stripe'
 
 // Allowed origins for redirect URLs
 const ALLOWED_ORIGINS = [
@@ -41,26 +41,19 @@ export async function POST(req: NextRequest) {
 
     // Input validation
     const body = await req.json().catch(() => null)
-    if (!body || typeof body.plan !== 'string') {
+    if (!body || typeof body.amount !== 'number') {
       return NextResponse.json(
         { error: 'Invalid request body' },
         { status: 400 }
       )
     }
 
-    const { plan } = body
-    if (plan !== 'monthly' && plan !== 'yearly') {
+    const { amount } = body
+    // Minimum ¥100, maximum ¥100,000
+    if (amount < 100 || amount > 100000 || !Number.isInteger(amount)) {
       return NextResponse.json(
-        { error: 'Invalid plan. Must be "monthly" or "yearly".' },
+        { error: 'Amount must be an integer between 100 and 100000.' },
         { status: 400 }
-      )
-    }
-
-    const priceId = plan === 'yearly' ? PRICE_IDS.yearly : PRICE_IDS.monthly
-    if (!priceId) {
-      return NextResponse.json(
-        { error: 'Price not configured' },
-        { status: 500 }
       )
     }
 
@@ -71,20 +64,23 @@ export async function POST(req: NextRequest) {
       : ALLOWED_ORIGINS[0]
 
     const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+      mode: 'payment',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: 'jpy',
+            product_data: {
+              name: '歩禅 HoZen — ご支援',
+              description: '歩く瞑想アプリへのドネーション',
+            },
+            unit_amount: amount,
+          },
           quantity: 1,
         },
       ],
-      success_url: `${origin}/meditation?success=true`,
-      cancel_url: `${origin}/pricing?canceled=true`,
-      allow_promotion_codes: true,
-      subscription_data: {
-        trial_period_days: 7,
-      },
+      success_url: `${origin}/pricing?donated=true`,
+      cancel_url: `${origin}/pricing`,
     })
 
     return NextResponse.json({ url: session.url })

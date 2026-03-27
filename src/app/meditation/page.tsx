@@ -797,7 +797,10 @@ function MeditationInner() {
             className="w-full px-8 py-4 bg-hozen-gold text-hozen-dark font-semibold rounded-full text-lg hover:bg-hozen-gold-light transition-all active:scale-95">
             {t('complete_again')}
           </button>
-          <Link href="/" className="block text-white/30 hover:text-white/50 mt-4 text-sm">
+          <Link href="/pricing" className="block text-white/50 hover:text-white/70 mt-4 text-sm">
+            {t('donate_title')}
+          </Link>
+          <Link href="/" className="block text-white/30 hover:text-white/50 mt-2 text-sm">
             {t('home')}
           </Link>
         </div>

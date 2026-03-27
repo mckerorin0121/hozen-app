@@ -4,116 +4,192 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 
-function CheckIcon() {
+const DONATION_AMOUNTS = [300, 500, 1000, 3000, 5000]
+
+function HeartIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D5016" strokeWidth="2.5">
-      <polyline points="20 6 9 17 4 12" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   )
 }
 
-export default function PricingPage() {
-  const { locale, t } = useI18n()
-  const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
-  const [loading, setLoading] = useState(false)
+function BankIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" />
+    </svg>
+  )
+}
 
-  const handleSubscribe = async () => {
+export default function DonatePage() {
+  const { t } = useI18n()
+  const [selectedAmount, setSelectedAmount] = useState(500)
+  const [customAmount, setCustomAmount] = useState('')
+  const [isCustom, setIsCustom] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [showBankCopied, setShowBankCopied] = useState('')
+
+  const amount = isCustom ? (parseInt(customAmount) || 0) : selectedAmount
+
+  const handleStripeDonate = async () => {
+    if (amount < 100) return
     setLoading(true)
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: billing }),
+        body: JSON.stringify({ amount }),
       })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
       } else {
-        alert(t('pricing_error'))
+        alert(t('donate_stripe_error'))
       }
     } catch {
-      alert(t('pricing_generic_error'))
+      alert(t('donate_stripe_generic_error'))
     } finally {
       setLoading(false)
     }
   }
 
-  const premiumFeats = [
-    t('pricing_feat1'), t('pricing_feat2'), t('pricing_feat3'),
-    t('pricing_feat4'), t('pricing_feat5'), t('pricing_feat6'),
-  ]
-  const freeFeats = [t('pricing_free1'), t('pricing_free2'), t('pricing_free3')]
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).catch(() => {})
+    setShowBankCopied(field)
+    setTimeout(() => setShowBankCopied(''), 2000)
+  }
+
+  // Bank info — update these with your actual details
+  const bankInfo = {
+    bankName: 'ゆうちょ銀行',
+    branchName: '〇〇八（ゼロゼロハチ）店',
+    accountType: t('donate_bank_type_value'),
+    accountNumber: '1234567',
+    accountHolder: 'ミヤザキ ヤスヒト',
+  }
 
   return (
     <div className="min-h-screen bg-hozen-cream">
       <div className="max-w-lg mx-auto px-6 py-8">
         <Link href="/" className="inline-flex items-center gap-2 text-hozen-green/60 hover:text-hozen-green mb-8">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-          <span>{t('home')}</span>
+          <span>{t('donate_back')}</span>
         </Link>
 
+        {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-hozen-green mb-3 font-jp">{t('pricing_title')}</h1>
-          <p className="text-hozen-dark/60">{t('pricing_trial')}</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-hozen-gold/10 rounded-full mb-4 text-hozen-gold">
+            <HeartIcon />
+          </div>
+          <h1 className="text-3xl font-bold text-hozen-green mb-3 font-jp">{t('donate_title')}</h1>
+          <p className="text-hozen-dark/60 whitespace-pre-line">{t('donate_sub')}</p>
         </div>
 
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-full p-1 shadow-sm inline-flex border border-hozen-green/10">
-            <button onClick={() => setBilling('monthly')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billing === 'monthly' ? 'bg-hozen-green text-white' : 'text-hozen-dark/60 hover:text-hozen-dark'}`}>
-              {t('pricing_monthly')}
-            </button>
-            <button onClick={() => setBilling('yearly')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billing === 'yearly' ? 'bg-hozen-green text-white' : 'text-hozen-dark/60 hover:text-hozen-dark'}`}>
-              {t('pricing_yearly')}
-              <span className="ml-1 text-xs text-hozen-gold font-bold">-31%</span>
-            </button>
-          </div>
+        {/* Why support */}
+        <div className="bg-hozen-green/5 rounded-2xl p-6 mb-8 border border-hozen-green/10">
+          <h2 className="font-bold text-hozen-green mb-2 font-jp">{t('donate_why_title')}</h2>
+          <p className="text-hozen-dark/60 text-sm leading-relaxed whitespace-pre-line">{t('donate_why_body')}</p>
         </div>
 
-        {/* Price Card */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-hozen-green/10 mb-8">
-          <div className="text-center mb-8">
-            {billing === 'monthly' ? (
-              <>
-                <div className="text-5xl font-bold text-hozen-green">¥480</div>
-                <div className="text-hozen-dark/40 mt-1">{t('pricing_per_month')}</div>
-              </>
-            ) : (
-              <>
-                <div className="text-5xl font-bold text-hozen-green">¥3,980</div>
-                <div className="text-hozen-dark/40 mt-1">{t('pricing_per_year_detail')}</div>
-                <div className="inline-block mt-2 px-3 py-1 bg-hozen-gold/10 text-hozen-gold text-sm font-semibold rounded-full">
-                  {t('pricing_save')}
-                </div>
-              </>
-            )}
-          </div>
+        {/* Stripe Card Payment */}
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-hozen-green/10 mb-6">
+          <h2 className="font-bold text-hozen-green mb-6 font-jp flex items-center gap-2">
+            <span className="text-hozen-gold">💳</span> {t('donate_stripe_button')}
+          </h2>
 
-          <div className="space-y-4 mb-8">
-            {premiumFeats.map((f, i) => (
-              <div key={i} className="flex items-center gap-3"><CheckIcon /><span className="text-hozen-dark/70">{f}</span></div>
+          {/* Amount selector */}
+          <p className="text-sm text-hozen-dark/50 mb-3">{t('donate_amount_label')}</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {DONATION_AMOUNTS.map(a => (
+              <button
+                key={a}
+                onClick={() => { setSelectedAmount(a); setIsCustom(false) }}
+                className={`py-3 rounded-xl text-sm font-bold transition-all ${
+                  !isCustom && selectedAmount === a
+                    ? 'bg-hozen-green text-white shadow-md'
+                    : 'bg-hozen-green/5 text-hozen-green hover:bg-hozen-green/10'
+                }`}
+              >
+                ¥{a.toLocaleString()}
+              </button>
             ))}
+            <button
+              onClick={() => setIsCustom(true)}
+              className={`py-3 rounded-xl text-sm font-bold transition-all ${
+                isCustom
+                  ? 'bg-hozen-green text-white shadow-md'
+                  : 'bg-hozen-green/5 text-hozen-green hover:bg-hozen-green/10'
+              }`}
+            >
+              {t('donate_amount_custom')}
+            </button>
           </div>
 
-          <button onClick={handleSubscribe} disabled={loading}
-            className="w-full py-4 bg-hozen-gold text-hozen-dark font-bold rounded-full text-lg hover:bg-hozen-gold-light transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
-            {loading ? t('pricing_loading') : t('pricing_cta')}
+          {isCustom && (
+            <div className="mb-4">
+              <div className="flex items-center bg-hozen-green/5 rounded-xl px-4 py-3 border border-hozen-green/10 focus-within:border-hozen-green/30">
+                <span className="text-hozen-green font-bold mr-2">¥</span>
+                <input
+                  type="number"
+                  min="100"
+                  placeholder="100"
+                  value={customAmount}
+                  onChange={e => setCustomAmount(e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-hozen-dark font-bold text-lg"
+                  autoFocus
+                />
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={handleStripeDonate}
+            disabled={loading || amount < 100}
+            className="w-full py-4 bg-hozen-gold text-hozen-dark font-bold rounded-full text-lg hover:bg-hozen-gold-light transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          >
+            {loading ? t('donate_stripe_loading') : `${t('donate_stripe_button')} — ¥${amount.toLocaleString()}`}
           </button>
-          <p className="text-center text-hozen-dark/40 text-xs mt-4 whitespace-pre-line">{t('pricing_note')}</p>
         </div>
 
-        {/* Free Plan */}
-        <div className="bg-white/50 rounded-2xl p-6 border border-hozen-green/5">
-          <h3 className="font-bold text-hozen-dark/80 mb-4 font-jp">{t('pricing_free_title')}</h3>
-          <div className="space-y-3">
-            {freeFeats.map((f, i) => (
-              <div key={i} className="flex items-center gap-3"><CheckIcon /><span className="text-hozen-dark/60 text-sm">{f}</span></div>
+        {/* Bank Transfer */}
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-hozen-green/10 mb-8">
+          <h2 className="font-bold text-hozen-green mb-6 font-jp flex items-center gap-2">
+            <span className="text-hozen-gold"><BankIcon /></span> {t('donate_bank_title')}
+          </h2>
+
+          <div className="space-y-4">
+            {[
+              { label: t('donate_bank_name'), value: bankInfo.bankName, key: 'bank' },
+              { label: t('donate_bank_branch'), value: bankInfo.branchName, key: 'branch' },
+              { label: t('donate_bank_type'), value: bankInfo.accountType, key: 'type' },
+              { label: t('donate_bank_number'), value: bankInfo.accountNumber, key: 'number' },
+              { label: t('donate_bank_holder'), value: bankInfo.accountHolder, key: 'holder' },
+            ].map(item => (
+              <div key={item.key} className="flex items-center justify-between py-2 border-b border-hozen-dark/5 last:border-0">
+                <div>
+                  <div className="text-xs text-hozen-dark/40">{item.label}</div>
+                  <div className="font-bold text-hozen-dark/80">{item.value}</div>
+                </div>
+                <button
+                  onClick={() => copyToClipboard(item.value, item.key)}
+                  className="text-xs text-hozen-green/60 hover:text-hozen-green px-3 py-1 rounded-full border border-hozen-green/20 hover:border-hozen-green/40 transition-all"
+                >
+                  {showBankCopied === item.key ? '✓' : 'Copy'}
+                </button>
+              </div>
             ))}
           </div>
-          <Link href="/meditation" className="block mt-4 text-center text-hozen-green font-medium hover:underline">
-            {t('pricing_free_continue')}
+
+          <p className="text-xs text-hozen-dark/40 mt-4">{t('donate_bank_note')}</p>
+        </div>
+
+        {/* Thanks */}
+        <p className="text-center text-hozen-dark/50 text-sm mb-8">{t('donate_thanks')}</p>
+
+        <div className="text-center">
+          <Link href="/meditation" className="text-hozen-green font-semibold hover:underline">
+            {t('donate_back')}
           </Link>
         </div>
       </div>
