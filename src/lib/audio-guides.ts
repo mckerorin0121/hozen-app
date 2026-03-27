@@ -13,7 +13,6 @@ export interface MeditationProgram {
   title: string
   subtitle: string
   duration: number  // total minutes
-  isPremium: boolean
   steps: GuideStep[]
 }
 
@@ -491,23 +490,22 @@ const PROGRAMS_EN = {
 interface ProgramMeta {
   id: string
   duration: number
-  isPremium: boolean
 }
 
 const PROGRAM_META: ProgramMeta[] = [
-  { id: 'beginner-day1', duration: 5, isPremium: false },
-  { id: 'timer-5', duration: 5, isPremium: false },
-  { id: 'stress-relief', duration: 10, isPremium: false },
-  { id: 'morning-energy', duration: 7, isPremium: false },
-  { id: 'evening-calm', duration: 10, isPremium: false },
-  { id: 'focus-boost', duration: 5, isPremium: false },
-  { id: 'course-day1', duration: 5, isPremium: false },
-  { id: 'course-day2', duration: 5, isPremium: false },
-  { id: 'course-day3', duration: 5, isPremium: false },
-  { id: 'course-day4', duration: 7, isPremium: false },
-  { id: 'course-day5', duration: 7, isPremium: false },
-  { id: 'course-day6', duration: 10, isPremium: false },
-  { id: 'course-day7', duration: 10, isPremium: false },
+  { id: 'beginner-day1', duration: 5 },
+  { id: 'timer-5', duration: 5 },
+  { id: 'stress-relief', duration: 10 },
+  { id: 'morning-energy', duration: 7 },
+  { id: 'evening-calm', duration: 10 },
+  { id: 'focus-boost', duration: 5 },
+  { id: 'course-day1', duration: 5 },
+  { id: 'course-day2', duration: 5 },
+  { id: 'course-day3', duration: 5 },
+  { id: 'course-day4', duration: 7 },
+  { id: 'course-day5', duration: 7 },
+  { id: 'course-day6', duration: 10 },
+  { id: 'course-day7', duration: 10 },
 ]
 
 /**
@@ -541,7 +539,6 @@ export function getPrograms(locale: Locale, titleFn: (key: string) => string): {
         title: titleFn(titleKey) || id,
         subtitle: titleFn(subtitleKey) || '',
         duration: meta.duration,
-        isPremium: meta.isPremium,
         steps,
       }
     })
@@ -560,25 +557,3 @@ export function getAudioPrefix(locale: Locale, gender: 'female' | 'male'): strin
   return `/audio/guide/${gender}`
 }
 
-// Legacy exports for backward compat during transition
-export const FREE_PROGRAMS: MeditationProgram[] = PROGRAMS_JA.free.map(({ id, steps }) => {
-  const meta = PROGRAM_META.find(m => m.id === id)!
-  const titles: Record<string, [string, string]> = {
-    'beginner-day1': ['はじめての歩禅', 'Day 1 - 5分間の基本体験'],
-    'timer-5': ['サイレント歩禅', '5分間のタイマーモード'],
-  }
-  const [title, subtitle] = titles[id] || [id, '']
-  return { id, title, subtitle, duration: meta.duration, isPremium: meta.isPremium, steps }
-})
-
-export const PREMIUM_PROGRAMS: MeditationProgram[] = PROGRAMS_JA.premium.map(({ id, steps }) => {
-  const meta = PROGRAM_META.find(m => m.id === id)!
-  const titles: Record<string, [string, string]> = {
-    'stress-relief': ['ストレス解放', '10分間の深いリラクゼーション'],
-    'morning-energy': ['朝のエナジー', '7分間の活力チャージ'],
-    'evening-calm': ['夕方のクールダウン', '10分間の心身リセット'],
-    'focus-boost': ['集中力ブースト', '5分間のフォーカス瞑想'],
-  }
-  const [title, subtitle] = titles[id] || [id, '']
-  return { id, title, subtitle, duration: meta.duration, isPremium: meta.isPremium, steps }
-})

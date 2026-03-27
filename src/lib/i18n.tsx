@@ -93,8 +93,6 @@ const ja = {
   // ─── Select screen ───
   select_title: 'プログラムを選択',
   select_free: '無料',
-  select_premium: 'プレミアム',
-  select_premium_badge: 'PRO',
   select_minutes: '分',
   select_ambient: '環境音',
   select_voice: 'ナレーション',
@@ -106,7 +104,6 @@ const ja = {
   select_stats_total_time: '合計',
   select_stats_streak: '連続',
   select_stats_streak_days: '日',
-  select_unlock_premium: 'プレミアムで全プログラム解放 →',
 
   // ─── Programs ───
   program_beginner_title: 'はじめての歩禅',
@@ -166,7 +163,6 @@ const ja = {
   complete_message: '今日も素晴らしい歩禅でした。\nこの穏やかな気持ちを大切に。',
   complete_done: '完了',
   complete_again: 'もう一度',
-  complete_premium_cta: 'プレミアムで更に深く →',
   complete_cumulative: '累計記録',
   complete_quote_ja: '「足の裏の感覚に気づくこと。上げる、運ぶ、下ろす。それだけで、心は自然と静まります。」',
 
@@ -269,8 +265,6 @@ const en: Translations = {
 
   select_title: 'Choose a Program',
   select_free: 'Free',
-  select_premium: 'Premium',
-  select_premium_badge: 'PRO',
   select_minutes: 'min',
   select_ambient: 'Ambient',
   select_voice: 'Narrator',
@@ -282,7 +276,6 @@ const en: Translations = {
   select_stats_total_time: 'Total',
   select_stats_streak: 'Streak',
   select_stats_streak_days: 'days',
-  select_unlock_premium: 'Unlock all programs with Premium →',
 
   program_beginner_title: 'First Steps',
   program_beginner_subtitle: 'Day 1 — 5 min basics',
@@ -339,7 +332,6 @@ const en: Translations = {
   complete_message: "Another wonderful walking meditation.\nCarry this calm with you.",
   complete_done: 'Done',
   complete_again: 'Again',
-  complete_premium_cta: 'Go deeper with Premium →',
   complete_cumulative: 'Total Record',
   complete_quote_ja: '"Notice the soles of your feet. Lifting, moving, placing. That alone quiets the mind."',
 
