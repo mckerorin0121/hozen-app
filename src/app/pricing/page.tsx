@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 
-const DONATION_AMOUNTS = [300, 500, 1000, 3000, 5000]
+const STRIPE_DONATION_URL = 'https://donate.stripe.com/8x228t8cYdtm1FJ14zb3q02'
 
 function HeartIcon() {
   return (
@@ -24,35 +24,7 @@ function BankIcon() {
 
 export default function DonatePage() {
   const { t } = useI18n()
-  const [selectedAmount, setSelectedAmount] = useState(500)
-  const [customAmount, setCustomAmount] = useState('')
-  const [isCustom, setIsCustom] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [showBankCopied, setShowBankCopied] = useState('')
-
-  const amount = isCustom ? (parseInt(customAmount) || 0) : selectedAmount
-
-  const handleStripeDonate = async () => {
-    if (amount < 100) return
-    setLoading(true)
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount }),
-      })
-      const data = await res.json()
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        alert(t('donate_stripe_error'))
-      }
-    } catch {
-      alert(t('donate_stripe_generic_error'))
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text).catch(() => {})
@@ -60,13 +32,12 @@ export default function DonatePage() {
     setTimeout(() => setShowBankCopied(''), 2000)
   }
 
-  // Bank info — update these with your actual details
   const bankInfo = {
-    bankName: 'ゆうちょ銀行',
-    branchName: '〇〇八（ゼロゼロハチ）店',
+    bankName: '三菱UFJ銀行',
+    branchName: '五反田駅前支店',
     accountType: t('donate_bank_type_value'),
-    accountNumber: '1234567',
-    accountHolder: 'ミヤザキ ヤスヒト',
+    accountNumber: '3082413',
+    accountHolder: 'アイミヤ ヤスヒト',
   }
 
   return (
@@ -92,64 +63,20 @@ export default function DonatePage() {
           <p className="text-hozen-dark/60 text-sm leading-relaxed whitespace-pre-line">{t('donate_why_body')}</p>
         </div>
 
-        {/* Stripe Card Payment */}
+        {/* Stripe Donation Link */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-hozen-green/10 mb-6">
-          <h2 className="font-bold text-hozen-green mb-6 font-jp flex items-center gap-2">
+          <h2 className="font-bold text-hozen-green mb-4 font-jp flex items-center gap-2">
             <span className="text-hozen-gold">💳</span> {t('donate_stripe_button')}
           </h2>
-
-          {/* Amount selector */}
-          <p className="text-sm text-hozen-dark/50 mb-3">{t('donate_amount_label')}</p>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {DONATION_AMOUNTS.map(a => (
-              <button
-                key={a}
-                onClick={() => { setSelectedAmount(a); setIsCustom(false) }}
-                className={`py-3 rounded-xl text-sm font-bold transition-all ${
-                  !isCustom && selectedAmount === a
-                    ? 'bg-hozen-green text-white shadow-md'
-                    : 'bg-hozen-green/5 text-hozen-green hover:bg-hozen-green/10'
-                }`}
-              >
-                ¥{a.toLocaleString()}
-              </button>
-            ))}
-            <button
-              onClick={() => setIsCustom(true)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all ${
-                isCustom
-                  ? 'bg-hozen-green text-white shadow-md'
-                  : 'bg-hozen-green/5 text-hozen-green hover:bg-hozen-green/10'
-              }`}
-            >
-              {t('donate_amount_custom')}
-            </button>
-          </div>
-
-          {isCustom && (
-            <div className="mb-4">
-              <div className="flex items-center bg-hozen-green/5 rounded-xl px-4 py-3 border border-hozen-green/10 focus-within:border-hozen-green/30">
-                <span className="text-hozen-green font-bold mr-2">¥</span>
-                <input
-                  type="number"
-                  min="100"
-                  placeholder="100"
-                  value={customAmount}
-                  onChange={e => setCustomAmount(e.target.value)}
-                  className="flex-1 bg-transparent outline-none text-hozen-dark font-bold text-lg"
-                  autoFocus
-                />
-              </div>
-            </div>
-          )}
-
-          <button
-            onClick={handleStripeDonate}
-            disabled={loading || amount < 100}
-            className="w-full py-4 bg-hozen-gold text-hozen-dark font-bold rounded-full text-lg hover:bg-hozen-gold-light transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          <p className="text-hozen-dark/50 text-sm mb-6">{t('donate_stripe_desc')}</p>
+          <a
+            href={STRIPE_DONATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-4 bg-hozen-gold text-hozen-dark font-bold rounded-full text-lg hover:bg-hozen-gold-light transition-all transform hover:scale-[1.02] shadow-lg text-center"
           >
-            {loading ? t('donate_stripe_loading') : `${t('donate_stripe_button')} — ¥${amount.toLocaleString()}`}
-          </button>
+            {t('donate_stripe_button')}
+          </a>
         </div>
 
         {/* Bank Transfer */}
