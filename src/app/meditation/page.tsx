@@ -798,7 +798,7 @@ function MeditationInner() {
             {t('complete_again')}
           </button>
           <Link href="/pricing" className="block text-white/50 hover:text-white/70 mt-4 text-sm">
-            {t('donate_title')}
+            {t('donate_footer')}
           </Link>
           <Link href="/" className="block text-white/30 hover:text-white/50 mt-2 text-sm">
             {t('home')}

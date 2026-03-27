@@ -18,7 +18,6 @@ const ja = {
   hero_tagline: '歩くだけで、心が整う。',
   hero_sub: '毎日の歩きを、瞑想の時間に。',
   hero_cta: '無料で体験する',
-  hero_pricing: 'プランを見る',
 
   // ─── What is Walking Meditation ───
   what_title: '歩く瞑想とは？',
@@ -58,10 +57,8 @@ const ja = {
   testimonial2_role: 'マネージャー / 45歳',
 
   cta_title: '今日から、歩禅を始めよう',
-  cta_desc: '7日間の無料体験で、歩行瞑想の効果を実感してください。\nクレジットカード不要で、今すぐ始められます。',
-  cta_button: '無料で体験する →',
-
-  footer_legal: '特定商取引法に基づく表記',
+  cta_desc: 'すべてのプログラムが完全無料。\n登録不要、今すぐ始められます。',
+  cta_button: '歩禅を始める →',
 
   // ─── Donation page ───
   donate_title: '歩禅を応援する',
@@ -80,11 +77,7 @@ const ja = {
   donate_bank_note: '※ 振込手数料はご負担ください',
   donate_thanks: 'いただいたご支援は、歩禅の開発・運営に大切に使わせていただきます。',
   donate_back: '← 歩禅に戻る',
-
-  // ─── Tokusho page ───
-  tokusho_title: '特定商取引法に基づく表記',
-  tokusho_sub: '特定商取引法第11条に基づき、以下の通り表示いたします。',
-  tokusho_contact: 'ご不明な点はメール（aimiya121@gmail.com）よりお問い合わせください。',
+  donate_footer: '開発を応援する',
 
   // ─── Onboarding ───
   onboarding_title_1: '歩く瞑想って？',
@@ -202,7 +195,6 @@ const en: Translations = {
   hero_tagline: 'Walk your way to inner peace.',
   hero_sub: 'Turn your daily walk into meditation.',
   hero_cta: 'Try for Free',
-  hero_pricing: 'View Plans',
 
   // ─── What is Walking Meditation ───
   what_title: 'What is Walking Meditation?',
@@ -242,10 +234,8 @@ const en: Translations = {
   testimonial2_role: 'Manager / 45',
 
   cta_title: 'Start Your HoZen Journey Today',
-  cta_desc: 'Experience the power of walking meditation with a 7-day free trial.\nNo credit card required.',
-  cta_button: 'Try for Free →',
-
-  footer_legal: 'Legal Notice (Tokusho)',
+  cta_desc: 'All programs completely free.\nNo sign-up required. Start right now.',
+  cta_button: 'Start HoZen →',
 
   // ─── Donation page ───
   donate_title: 'Support HoZen',
@@ -264,11 +254,7 @@ const en: Translations = {
   donate_bank_note: '* Transfer fees are borne by the sender',
   donate_thanks: 'Your support will be used to develop and maintain HoZen.',
   donate_back: '← Back to HoZen',
-
-  // ─── Tokusho page ───
-  tokusho_title: 'Legal Notice',
-  tokusho_sub: 'Disclosure pursuant to the Act on Specified Commercial Transactions (Japan).',
-  tokusho_contact: 'For inquiries, please contact us at aimiya121@gmail.com.',
+  donate_footer: 'Support Development',
 
   // ─── Onboarding ───
   onboarding_title_1: 'What is Walking Meditation?',
