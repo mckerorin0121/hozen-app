@@ -11,7 +11,6 @@ import { playBell, playBellShort } from '@/lib/bell'
 import { FootAnimationMini } from '@/components/FootAnimation'
 
 type Screen = 'onboarding' | 'select' | 'prepare' | 'playing' | 'complete'
-type AmbientType = 'forest' | 'stream' | 'rain' | 'wind' | 'none'
 type SelectTab = 'programs' | 'course'
 
 /* ─── Icons ─── */
@@ -72,7 +71,6 @@ function MeditationInner() {
   const [selectTab, setSelectTab] = useState<SelectTab>('programs')
   const [onboardingPage, setOnboardingPage] = useState(0)
   const [selectedProgram, setSelectedProgram] = useState<MeditationProgram | null>(null)
-  const [ambient, setAmbient] = useState<AmbientType>(() => loadPreference('hozen_ambient', 'forest') as AmbientType)
   const [isPlaying, setIsPlaying] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [steps, setSteps] = useState(0)
@@ -89,19 +87,9 @@ function MeditationInner() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const stepDetectorRef = useRef<StepDetector | null>(null)
   const voiceRef = useRef<VoiceGuide | null>(null)
-  const ambientRef = useRef<HTMLAudioElement | null>(null)
   const guideIndexRef = useRef(0)
   const sessionSavedRef = useRef(false)
   const prevGuideIndexRef = useRef(-1)
-
-  // Ambient labels per locale
-  const AMBIENTS: { id: AmbientType; label: string; emoji: string }[] = [
-    { id: 'forest', label: t('ambient_forest'), emoji: '🌿' },
-    { id: 'stream', label: t('ambient_stream'), emoji: '💧' },
-    { id: 'rain', label: t('ambient_rain'), emoji: '🌧️' },
-    { id: 'wind', label: t('ambient_wind'), emoji: '🌬️' },
-    { id: 'none', label: t('ambient_none'), emoji: '🔇' },
-  ]
 
   // Programs for current locale
   const programs = getPrograms(locale, (key) => t(key as any))
@@ -117,9 +105,6 @@ function MeditationInner() {
 
   useEffect(() => { setStats(getStats()) }, [screen])
 
-  useEffect(() => {
-    try { localStorage.setItem('hozen_ambient', ambient) } catch {}
-  }, [ambient])
   useEffect(() => {
     try { localStorage.setItem('hozen_voice_gender', voiceGender) } catch {}
   }, [voiceGender])
@@ -197,34 +182,6 @@ function MeditationInner() {
     return courseProgress.has(prevDayId)
   }
 
-  /* ─── Ambient audio ─── */
-  const startAmbient = useCallback((type: AmbientType) => {
-    if (ambientRef.current) { ambientRef.current.pause(); ambientRef.current = null }
-    if (type === 'none') return
-    const audio = new Audio(`/audio/${type}.ogg`)
-    audio.loop = true
-    audio.volume = 0
-    audio.play().catch(() => {})
-    let vol = 0
-    const fadeIn = setInterval(() => {
-      vol += 0.02
-      if (vol >= 0.35) { audio.volume = 0.35; clearInterval(fadeIn); return }
-      audio.volume = vol
-    }, 100)
-    ambientRef.current = audio
-  }, [])
-
-  const stopAmbient = useCallback(() => {
-    if (!ambientRef.current) return
-    const audio = ambientRef.current
-    let vol = audio.volume
-    const fadeOut = setInterval(() => {
-      vol -= 0.02
-      if (vol <= 0) { audio.pause(); clearInterval(fadeOut); ambientRef.current = null; return }
-      audio.volume = vol
-    }, 80)
-  }, [])
-
   /* ─── Meditation lifecycle ─── */
   const startMeditation = useCallback(async (program: MeditationProgram) => {
     await voiceRef.current?.unlock()
@@ -257,8 +214,6 @@ function MeditationInner() {
     setIsPlaying(true)
     guideIndexRef.current = 0
     prevGuideIndexRef.current = -1
-    startAmbient(ambient)
-
     const detector = new StepDetector((count) => setSteps(count))
     stepDetectorRef.current = detector
     await detector.start()
@@ -275,7 +230,7 @@ function MeditationInner() {
         voiceRef.current?.speak(firstStep.speech, firstStep.fileKey)
       }
     }
-  }, [ambient, startAmbient])
+  }, [])
 
   useEffect(() => {
     if (isPlaying && selectedProgram) {
@@ -312,7 +267,6 @@ function MeditationInner() {
             setIsPlaying(false)
             setScreen('complete')
             stepDetectorRef.current?.stop()
-            stopAmbient()
             if (timerRef.current) clearInterval(timerRef.current)
           }
           return next
@@ -320,15 +274,13 @@ function MeditationInner() {
       }, 1000)
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [isPlaying, selectedProgram, voiceMuted, stopAmbient])
+  }, [isPlaying, selectedProgram, voiceMuted])
 
   useEffect(() => {
     if (screen === 'complete') saveCurrentSession()
   }, [screen, saveCurrentSession])
 
   const togglePlay = () => {
-    if (isPlaying) { if (ambientRef.current) ambientRef.current.volume = 0.1 }
-    else { if (ambientRef.current) ambientRef.current.volume = 0.35 }
     setIsPlaying(prev => !prev)
   }
 
@@ -336,7 +288,6 @@ function MeditationInner() {
     setIsPlaying(false)
     stepDetectorRef.current?.stop()
     voiceRef.current?.stop()
-    stopAmbient()
     if (timerRef.current) clearInterval(timerRef.current)
     playBellShort(0.25).catch(() => {})
     setScreen('complete')
@@ -445,20 +396,6 @@ function MeditationInner() {
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${locale === 'en' ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
                     🇺🇸 English
                   </button>
-                </div>
-              </div>
-
-              {/* Ambient selector */}
-              <div className="mb-6">
-                <p className="text-sm font-medium text-hozen-dark/50 mb-3">{t('select_ambient')}</p>
-                <div className="flex gap-2 flex-wrap">
-                  {AMBIENTS.map(a => (
-                    <button key={a.id} onClick={() => setAmbient(a.id)}
-                      aria-pressed={ambient === a.id}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${ambient === a.id ? 'bg-hozen-green text-white shadow-md' : 'bg-white text-hozen-dark/60 border border-hozen-green/10 hover:border-hozen-green/30'}`}>
-                      {a.emoji} {a.label}
-                    </button>
-                  ))}
                 </div>
               </div>
 
@@ -662,9 +599,6 @@ function MeditationInner() {
 
         {/* Top bar */}
         <div className="absolute top-8 left-6 right-6 flex justify-between items-center z-10">
-          <div className="text-white/20 text-sm">
-            {AMBIENTS.find(a => a.id === ambient)?.emoji} {AMBIENTS.find(a => a.id === ambient)?.label}
-          </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setImmersive(true)} className="text-white/30 hover:text-white/60 text-xs transition-all px-2 py-1 rounded-full border border-white/10 hover:border-white/20">
               {t('immersive_on')}
