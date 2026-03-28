@@ -29,7 +29,7 @@ export interface MeditationProgram {
 
 const JA_BEGINNER_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n目は半眼、視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。目は半眼、視線は1.5メートルほど先の地面に', fileKey: 'day1_01' },
+  { time: 0, text: 'まっすぐ立ってください\n目は半眼、視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。目は半眼、視線は1メートルほど先の地面に', fileKey: 'day1_01' },
   { time: 12, text: '両足の裏が地面に触れている感覚に\n意識を向けてください', speech: '両足の裏が地面に触れている感覚に、意識を向けてください', fileKey: 'day1_02' },
   { time: 24, text: '心の中で唱えます\n「立っている...立っている...立っている」', speech: '心の中で唱えます。立っている、立っている、立っている', fileKey: 'day1_03' },
   // 歩く意図
@@ -58,7 +58,7 @@ const JA_TIMER_STEPS: GuideStep[] = [
 
 const JA_STRESS_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'stress_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'stress_01' },
   { time: 12, text: '「立っている...立っている...立っている」\n両足の裏の感覚に気づいてください', speech: '立っている、立っている、立っている。両足の裏の感覚に気づいてください', fileKey: 'stress_02' },
   // 歩く意図
   { time: 28, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'stress_03' },
@@ -86,7 +86,7 @@ const JA_STRESS_STEPS: GuideStep[] = [
 
 const JA_MORNING_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'morning_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'morning_01' },
   { time: 12, text: '「立っている...立っている...立っている」\n足の裏が地面に触れている感覚を確認します', speech: '立っている、立っている、立っている。足の裏が地面に触れている感覚を確認します', fileKey: 'morning_02' },
   // 歩く意図
   { time: 28, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'morning_03' },
@@ -110,7 +110,7 @@ const JA_MORNING_STEPS: GuideStep[] = [
 
 const JA_EVENING_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'evening_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'evening_01' },
   { time: 12, text: '「立っている...立っている...立っている」\n足の裏が地面に触れている感覚', speech: '立っている、立っている、立っている。足の裏が地面に触れている感覚', fileKey: 'evening_02' },
   { time: 28, text: 'しばらくこのまま\n「立っている...立っている...立っている」', speech: 'しばらくこのまま。立っている、立っている、立っている', fileKey: 'evening_03' },
   // 歩く意図
@@ -138,7 +138,7 @@ const JA_EVENING_STEPS: GuideStep[] = [
 
 const JA_FOCUS_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'focus_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'focus_01' },
   { time: 10, text: '「立っている...立っている...立っている」', speech: '立っている、立っている、立っている', fileKey: 'focus_02' },
   // 歩く意図
   { time: 22, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'focus_03' },
@@ -309,7 +309,7 @@ const EN_FOCUS_STEPS: GuideStep[] = [
 
 const JA_COURSE_DAY1_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'cd1_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'cd1_01' },
   { time: 12, text: '「立っている...立っている...立っている」\n足の裏が地面に触れている感覚を確認します', speech: '立っている、立っている、立っている。足の裏が地面に触れている感覚を確認します', fileKey: 'cd1_02' },
   // 歩く意図
   { time: 28, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'cd1_03' },
@@ -330,7 +330,7 @@ const JA_COURSE_DAY1_STEPS: GuideStep[] = [
 
 const JA_COURSE_DAY2_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'cd2_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'cd2_01' },
   { time: 12, text: '「立っている...立っている...立っている」', speech: '立っている、立っている、立っている', fileKey: 'cd2_02' },
   // 歩く意図
   { time: 25, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'cd2_03' },
@@ -354,7 +354,7 @@ const JA_COURSE_DAY2_STEPS: GuideStep[] = [
 
 const JA_COURSE_DAY4_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'cd4_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'cd4_01' },
   { time: 12, text: '「立っている...立っている...立っている」', speech: '立っている、立っている、立っている', fileKey: 'cd4_02' },
   // 歩く意図
   { time: 25, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'cd4_03' },
@@ -378,7 +378,7 @@ const JA_COURSE_DAY4_STEPS: GuideStep[] = [
 
 const JA_COURSE_DAY5_STEPS: GuideStep[] = [
   // 立つ瞑想
-  { time: 0, text: 'まっすぐ立ってください\n視線は1.5メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1.5メートルほど先の地面に', fileKey: 'cd5_01' },
+  { time: 0, text: 'まっすぐ立ってください\n視線は1メートルほど先の地面に', speech: 'まっすぐ立ってください。視線は1メートルほど先の地面に', fileKey: 'cd5_01' },
   { time: 12, text: '「立っている...立っている...立っている」', speech: '立っている、立っている、立っている', fileKey: 'cd5_02' },
   // 歩く意図
   { time: 25, text: '「歩こうとしている...歩こうとしている\n歩こうとしている」', speech: '歩こうとしている、歩こうとしている、歩こうとしている', fileKey: 'cd5_03' },
