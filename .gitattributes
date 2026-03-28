@@ -1,0 +1,2 @@
+public/audio/guide/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
+public/audio/guide/*.mp3 filter=lfs diff=lfs merge=lfs -text
