@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: '歩禅 HoZen',
   },
   metadataBase: new URL('https://hozen-app.vercel.app'),
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#2D5016',
+  themeColor: '#F7F5F0',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -56,7 +56,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body className="bg-hozen-cream text-hozen-dark antialiased">
+      <body className="bg-hozen-paper text-hozen-ink antialiased">
         <ServiceWorkerRegister />
         <I18nWrapper>{children}</I18nWrapper>
       </body>

@@ -1,9 +1,9 @@
-const CACHE_NAME = 'hozen-v4'
+const CACHE_NAME = 'hozen-v5'
 
 // Static assets cached on install
 const STATIC_ASSETS = [
   '/',
-  '/meditation',
+  '/about',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

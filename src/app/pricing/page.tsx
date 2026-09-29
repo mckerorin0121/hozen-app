@@ -115,7 +115,7 @@ export default function DonatePage() {
         <p className="text-center text-hozen-dark/50 text-sm mb-8">{t('donate_thanks')}</p>
 
         <div className="text-center">
-          <Link href="/meditation" className="text-hozen-green font-semibold hover:underline">
+          <Link href="/" className="text-hozen-green font-semibold hover:underline">
             {t('donate_back')}
           </Link>
         </div>

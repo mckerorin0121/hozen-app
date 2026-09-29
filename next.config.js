@@ -51,10 +51,11 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob:",
-              "font-src 'self'",
-              "media-src 'self'",
+              "font-src 'self' https://fonts.gstatic.com",
+              // data: is needed for the silent clip that unlocks audio on iOS
+              "media-src 'self' data:",
               "connect-src 'self' https://api.stripe.com https://*.vercel.app",
               "frame-src https://js.stripe.com https://hooks.stripe.com",
               "object-src 'none'",

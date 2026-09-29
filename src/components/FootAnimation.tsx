@@ -162,39 +162,3 @@ export default function FootAnimation({
     </div>
   )
 }
-
-/**
- * Mini version for the playing screen - just shows current phase
- */
-export function FootAnimationMini({
-  phase,
-  locale = 'ja',
-}: {
-  phase: 'lifting' | 'moving' | 'placing' | null
-  locale?: 'ja' | 'en'
-}) {
-  if (!phase) return null
-
-  return (
-    <div className="flex items-center gap-2 text-white/60 text-xs">
-      <svg width="24" height="16" viewBox="0 0 80 40" className="text-white/50">
-        <g
-          transform={
-            phase === 'lifting' ? 'translate(10, 8) rotate(-20) scale(0.4)' :
-            phase === 'moving' ? 'translate(20, 4) rotate(-8) scale(0.4)' :
-            'translate(30, 14) rotate(0) scale(0.4)'
-          }
-          className="transition-all duration-500"
-        >
-          <path
-            d="M0,30 Q0,10 15,5 Q30,0 50,0 Q65,0 75,8 Q80,12 80,20 Q80,28 75,32 Q60,38 40,38 Q20,38 10,36 Q0,34 0,30 Z"
-            fill="currentColor"
-          />
-        </g>
-      </svg>
-      <span className="text-hozen-gold/80 font-medium">
-        {LABELS[locale][phase]}
-      </span>
-    </div>
-  )
-}

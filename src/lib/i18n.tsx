@@ -79,27 +79,23 @@ const ja = {
   donate_back: '← 歩禅に戻る',
   donate_footer: '開発を応援する',
 
-  // ─── Onboarding ───
-  onboarding_title_1: '歩く瞑想って？',
-  onboarding_body_1: '歩行瞑想（チャンカマナ）は、テーラワーダ仏教に伝わる2,500年以上の歴史を持つ瞑想法です。\n\n足を「上げる・運ぶ・下ろす」——この一歩一歩の動きに意識を向け、足の裏の感覚だけに集中します。座る瞑想と並ぶ、伝統的な修行法です。',
-  onboarding_title_2: 'なぜ効くの？',
-  onboarding_body_2: '私たちの心は常に過去や未来にさまよっています。\n\n歩行瞑想では、足の裏の感覚という「今ここ」の体験に繰り返し注意を戻します。考えが浮かんだら「考え」と気づき、足の裏に戻る。\n\nこの単純な繰り返しが、心を驚くほど静かにし、集中力を高めます。',
-  onboarding_title_3: '歩禅の使い方',
-  onboarding_body_3: '① プログラムを選ぶ\n② 環境音とナレーション声を設定\n③ スタートして、歩き始める\n\n音声ガイドが一歩ずつ導いてくれます。特別な準備は不要。今いる場所で、今すぐ始められます。',
-  onboarding_skip: 'スキップ',
-  onboarding_next: '次へ',
-  onboarding_start: 'さっそく始める',
+  // ─── App home ───
+  app_start: 'はじめる',
+  app_today: '今日の歩禅',
+  app_other_programs: 'ほかのプログラム',
+  app_programs: 'プログラム',
+  app_about: '歩行瞑想について',
+  app_settings: '設定',
+  app_hint: 'イヤホンをつけて、ゆっくり歩ける場所へ。\n音声が「上げる・運ぶ・下ろす」を一歩ずつ導きます。',
+  app_hint_ok: 'わかりました',
 
   // ─── Select screen ───
   select_title: 'プログラムを選択',
-  select_free: '無料',
   select_minutes: '分',
-  select_ambient: '環境音',
   select_voice: 'ナレーション',
   select_voice_female: '女性',
   select_voice_male: '男性',
   select_language: '言語',
-  select_stats_title: '統計',
   select_stats_sessions: '回',
   select_stats_total_time: '合計',
   select_stats_streak: '連続',
@@ -140,18 +136,12 @@ const ja = {
   program_cd7_title: 'Day 7：サイレント歩禅',
   program_cd7_subtitle: '10分 — ベルのみ、完全な静寂',
 
-  // ─── Immersive mode ───
-  immersive_on: '没入モード',
-  immersive_off: '通常モード',
-
   // ─── Playing screen ───
-  playing_steps: '歩',
   playing_pause: '一時停止',
   playing_resume: '再開',
   playing_end: '終了する',
-  playing_breathe_in: '🫁 吸って...',
-  playing_breathe_out: '🫁 吐いて...',
-  playing_breathe_hold: '⏸️ 止めて...',
+  playing_mute: '音声オフ',
+  playing_unmute: '音声オン',
   playing_prepare: '深呼吸して、準備しましょう',
   playing_earphone: 'イヤホンの装着を確認してください',
 
@@ -160,18 +150,8 @@ const ja = {
   complete_subtitle: '今日も一歩、心が整いました',
   complete_time: '瞑想時間',
   complete_steps: '歩数',
-  complete_message: '今日も素晴らしい歩禅でした。\nこの穏やかな気持ちを大切に。',
-  complete_done: '完了',
   complete_again: 'もう一度',
-  complete_cumulative: '累計記録',
-  complete_quote_ja: '「足の裏の感覚に気づくこと。上げる、運ぶ、下ろす。それだけで、心は自然と静まります。」',
-
-  // ─── Ambient ───
-  ambient_forest: '森',
-  ambient_stream: '小川',
-  ambient_rain: '雨',
-  ambient_wind: '風',
-  ambient_none: 'なし',
+  complete_home: 'ホームへ',
 
   // ─── Install banner ───
   install_title: '歩禅をホーム画面に追加',
@@ -252,26 +232,22 @@ const en: Translations = {
   donate_back: '← Back to HoZen',
   donate_footer: 'Support Development',
 
-  // ─── Onboarding ───
-  onboarding_title_1: 'What is Walking Meditation?',
-  onboarding_body_1: 'Walking meditation (Cankamana) is a practice from Theravada Buddhism with over 2,500 years of history.\n\n"Lifting... moving... placing..." — you bring awareness to each step, focusing solely on the sensations in the soles of your feet. It is one of the core meditation practices alongside seated meditation.',
-  onboarding_title_2: 'Why Does It Work?',
-  onboarding_body_2: 'Our minds constantly wander to the past and the future.\n\nIn walking meditation, you practice returning attention again and again to the present-moment experience of your foot soles. When thoughts arise, note "thinking" and return to your feet.\n\nThis simple repetition remarkably quiets the mind and sharpens focus.',
-  onboarding_title_3: 'How to Use HoZen',
-  onboarding_body_3: '① Choose a program\n② Set ambient sound and narrator voice\n③ Tap start and begin walking\n\nThe voice guide will lead you step by step. No special preparation needed. Start right where you are, right now.',
-  onboarding_skip: 'Skip',
-  onboarding_next: 'Next',
-  onboarding_start: "Let's Begin",
+  // ─── App home ───
+  app_start: 'Begin',
+  app_today: "Today's walk",
+  app_other_programs: 'Other programs',
+  app_programs: 'Programs',
+  app_about: 'About walking meditation',
+  app_settings: 'Settings',
+  app_hint: 'Put on your earphones and find a place to walk slowly.\nThe voice guides each step: lifting, moving, placing.',
+  app_hint_ok: 'Got it',
 
   select_title: 'Choose a Program',
-  select_free: 'Free',
   select_minutes: 'min',
-  select_ambient: 'Ambient',
   select_voice: 'Narrator',
   select_voice_female: 'Female',
   select_voice_male: 'Male',
   select_language: 'Language',
-  select_stats_title: 'Statistics',
   select_stats_sessions: 'sessions',
   select_stats_total_time: 'Total',
   select_stats_streak: 'Streak',
@@ -311,17 +287,11 @@ const en: Translations = {
   program_cd7_title: 'Day 7: Silent Walk',
   program_cd7_subtitle: '10 min — bell only, complete silence',
 
-  // ─── Immersive mode ───
-  immersive_on: 'Immersive',
-  immersive_off: 'Normal',
-
-  playing_steps: 'steps',
   playing_pause: 'Pause',
   playing_resume: 'Resume',
   playing_end: 'End',
-  playing_breathe_in: '🫁 Breathe in...',
-  playing_breathe_out: '🫁 Breathe out...',
-  playing_breathe_hold: '⏸️ Hold...',
+  playing_mute: 'Mute voice',
+  playing_unmute: 'Unmute voice',
   playing_prepare: 'Take a deep breath and get ready',
   playing_earphone: 'Make sure your earphones are connected',
 
@@ -329,17 +299,8 @@ const en: Translations = {
   complete_subtitle: 'Another step toward inner peace',
   complete_time: 'Duration',
   complete_steps: 'Steps',
-  complete_message: "Another wonderful walking meditation.\nCarry this calm with you.",
-  complete_done: 'Done',
   complete_again: 'Again',
-  complete_cumulative: 'Total Record',
-  complete_quote_ja: '"Notice the soles of your feet. Lifting, moving, placing. That alone quiets the mind."',
-
-  ambient_forest: 'Forest',
-  ambient_stream: 'Stream',
-  ambient_rain: 'Rain',
-  ambient_wind: 'Wind',
-  ambient_none: 'None',
+  complete_home: 'Home',
 
   install_title: 'Add HoZen to Home Screen',
   install_desc: 'Launch instantly like a native app',

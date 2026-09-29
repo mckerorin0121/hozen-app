@@ -4,8 +4,8 @@
   "description": "歩くだけで、心が整う。歩行瞑想アプリ。",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F5F0E8",
-  "theme_color": "#2D5016",
+  "background_color": "#F7F5F0",
+  "theme_color": "#F7F5F0",
   "orientation": "portrait",
   "icons": [
     {

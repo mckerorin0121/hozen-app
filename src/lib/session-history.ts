@@ -20,6 +20,13 @@ export interface SessionStats {
   lastSessionDate: string | null
 }
 
+/** YYYY-MM-DD in the user's local time zone (toISOString would give the UTC date) */
+export function localDate(d: Date = new Date()): string {
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
+
 export function saveSession(record: SessionRecord): void {
   try {
     const history = getHistory()
@@ -61,7 +68,7 @@ export function getStats(): SessionStats {
   const totalSteps = history.reduce((sum, r) => sum + r.steps, 0)
 
   // Today's date in YYYY-MM-DD
-  const today = new Date().toISOString().slice(0, 10)
+  const today = localDate()
 
   // Today's sessions
   const todaySessions = history.filter(r => r.date === today).length
@@ -69,7 +76,7 @@ export function getStats(): SessionStats {
   // This week's sessions (last 7 days)
   const weekAgo = new Date()
   weekAgo.setDate(weekAgo.getDate() - 7)
-  const weekAgoStr = weekAgo.toISOString().slice(0, 10)
+  const weekAgoStr = localDate(weekAgo)
   const thisWeekSessions = history.filter(r => r.date >= weekAgoStr).length
 
   // Streak calculation
@@ -81,7 +88,7 @@ export function getStats(): SessionStats {
     // Check if the most recent session is today or yesterday
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayStr = yesterday.toISOString().slice(0, 10)
+    const yesterdayStr = localDate(yesterday)
 
     if (lastSessionDate === today || lastSessionDate === yesterdayStr) {
       // Walk backwards counting consecutive days
@@ -89,7 +96,7 @@ export function getStats(): SessionStats {
       const dateSet = new Set(uniqueDates)
 
       for (let i = 0; i < 365; i++) {
-        const dateStr = checkDate.toISOString().slice(0, 10)
+        const dateStr = localDate(checkDate)
         if (dateSet.has(dateStr)) {
           streakDays++
           checkDate.setDate(checkDate.getDate() - 1)
@@ -112,11 +119,13 @@ export function getStats(): SessionStats {
   }
 }
 
-export function formatTotalTime(seconds: number): string {
-  if (seconds < 60) return `${seconds}秒`
+export function formatTotalTime(seconds: number, locale: 'ja' | 'en' = 'ja'): string {
+  const en = locale === 'en'
+  if (seconds < 60) return en ? `${seconds}s` : `${seconds}秒`
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}分`
+  if (minutes < 60) return en ? `${minutes} min` : `${minutes}分`
   const hours = Math.floor(minutes / 60)
   const remainMinutes = minutes % 60
+  if (en) return remainMinutes > 0 ? `${hours}h ${remainMinutes}m` : `${hours}h`
   return remainMinutes > 0 ? `${hours}時間${remainMinutes}分` : `${hours}時間`
 }
